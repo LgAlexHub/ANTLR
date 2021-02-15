@@ -1,4 +1,4 @@
-// Generated from c:\Users\alexl\Documents\Licence3\théorie_comppil\TP59\Src\calculette.g4 by ANTLR 4.8
+// Generated from c:\Users\alexl\Documents\Licence3\théorie_comppil\TP59\Src\calcul.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class calculetteLexer extends Lexer {
+public class calculLexer extends Lexer {
 	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -81,13 +81,13 @@ public class calculetteLexer extends Lexer {
 	}
 
 
-	public calculetteLexer(CharStream input) {
+	public calculLexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	@Override
-	public String getGrammarFileName() { return "calculette.g4"; }
+	public String getGrammarFileName() { return "calcul.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }

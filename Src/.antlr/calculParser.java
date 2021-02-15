@@ -1,4 +1,4 @@
-// Generated from c:\Users\alexl\Documents\Licence3\th�orie_comppil\TP59\Src\calculette.g4 by ANTLR 4.8
+// Generated from c:\Users\alexl\Documents\Licence3\th�orie_comppil\TP59\Src\calcul.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class calculetteParser extends Parser {
+public class calculParser extends Parser {
 	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -19,10 +19,10 @@ public class calculetteParser extends Parser {
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, NEWLINE=8, WS=9, 
 		ENTIER=10, OPERATOR=11, UNMATCH=12;
 	public static final int
-		RULE_calcul = 0, RULE_instruction = 1, RULE_finInstruction = 2, RULE_expression = 3;
+		RULE_start = 0, RULE_instruction = 1, RULE_finInstruction = 2, RULE_expression = 3;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"calcul", "instruction", "finInstruction", "expression"
+			"start", "instruction", "finInstruction", "expression"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -74,7 +74,7 @@ public class calculetteParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "calculette.g4"; }
+	public String getGrammarFileName() { return "calcul.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -88,13 +88,13 @@ public class calculetteParser extends Parser {
 
 	    private String evalexpr (String x, String op, String y) {
 	        if ( op.equals("*") ){
-	            return "MUL";
+	            return "MUL\n";
 	        } else if ( op.equals("+") ){
-	            return "ADD";
+	            return "ADD\n";
 	        } else if ( op.equals("-") ){
-	                    return "SUB";
+	                    return "SUB\n";
 	        } else if ( op.equals("/") ){
-	                            return "DIV";
+	                            return "DIV\n";
 	        } else {
 	           System.err.println("Opérateur arithmétique incorrect : '"+op+"'");
 	           throw new IllegalArgumentException("Opérateur arithmétique incorrect : '"+op+"'");
@@ -102,17 +102,17 @@ public class calculetteParser extends Parser {
 	    }
 
 
-	public calculetteParser(TokenStream input) {
+	public calculParser(TokenStream input) {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
-	public static class CalculContext extends ParserRuleContext {
+	public static class StartContext extends ParserRuleContext {
 		public String code;
 		public InstructionContext instruction;
-		public List<TerminalNode> NEWLINE() { return getTokens(calculetteParser.NEWLINE); }
+		public List<TerminalNode> NEWLINE() { return getTokens(calculParser.NEWLINE); }
 		public TerminalNode NEWLINE(int i) {
-			return getToken(calculetteParser.NEWLINE, i);
+			return getToken(calculParser.NEWLINE, i);
 		}
 		public List<InstructionContext> instruction() {
 			return getRuleContexts(InstructionContext.class);
@@ -120,16 +120,16 @@ public class calculetteParser extends Parser {
 		public InstructionContext instruction(int i) {
 			return getRuleContext(InstructionContext.class,i);
 		}
-		public CalculContext(ParserRuleContext parent, int invokingState) {
+		public StartContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_calcul; }
+		@Override public int getRuleIndex() { return RULE_start; }
 	}
 
-	public final CalculContext calcul() throws RecognitionException {
-		CalculContext _localctx = new CalculContext(_ctx, getState());
-		enterRule(_localctx, 0, RULE_calcul);
-		 ((CalculContext)_localctx).code =  new String(); 
+	public final StartContext start() throws RecognitionException {
+		StartContext _localctx = new StartContext(_ctx, getState());
+		enterRule(_localctx, 0, RULE_start);
+		 ((StartContext)_localctx).code =  new String(); 
 		int _la;
 		try {
 			int _alt;
@@ -154,12 +154,12 @@ public class calculetteParser extends Parser {
 			setState(19);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << NEWLINE) | (1L << ENTIER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__6) | (1L << NEWLINE) | (1L << ENTIER))) != 0)) {
 				{
 				{
 				setState(14);
-				((CalculContext)_localctx).instruction = instruction();
-				 _localctx.code += ((CalculContext)_localctx).instruction.code; 
+				((StartContext)_localctx).instruction = instruction();
+				 _localctx.code += ((StartContext)_localctx).instruction.code; 
 				}
 				}
 				setState(21);
@@ -205,6 +205,7 @@ public class calculetteParser extends Parser {
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__1:
+			case T__6:
 			case ENTIER:
 				enterOuterAlt(_localctx, 1);
 				{
@@ -244,9 +245,9 @@ public class calculetteParser extends Parser {
 	}
 
 	public static class FinInstructionContext extends ParserRuleContext {
-		public List<TerminalNode> NEWLINE() { return getTokens(calculetteParser.NEWLINE); }
+		public List<TerminalNode> NEWLINE() { return getTokens(calculParser.NEWLINE); }
 		public TerminalNode NEWLINE(int i) {
-			return getToken(calculetteParser.NEWLINE, i);
+			return getToken(calculParser.NEWLINE, i);
 		}
 		public FinInstructionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -315,7 +316,7 @@ public class calculetteParser extends Parser {
 		public ExpressionContext expression(int i) {
 			return getRuleContext(ExpressionContext.class,i);
 		}
-		public TerminalNode ENTIER() { return getToken(calculetteParser.ENTIER, 0); }
+		public TerminalNode ENTIER() { return getToken(calculParser.ENTIER, 0); }
 		public ExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -338,7 +339,7 @@ public class calculetteParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(46);
+			setState(49);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case T__1:
@@ -354,12 +355,21 @@ public class calculetteParser extends Parser {
 				    
 				}
 				break;
-			case ENTIER:
+			case T__6:
 				{
 				setState(44);
+				match(T__6);
+				setState(45);
+				((ExpressionContext)_localctx).ENTIER = match(ENTIER);
+				((ExpressionContext)_localctx).code =  "PUSHI -"+((ExpressionContext)_localctx).ENTIER.getText()+"\n";
+				}
+				break;
+			case ENTIER:
+				{
+				setState(47);
 				((ExpressionContext)_localctx).ENTIER = match(ENTIER);
 
-				        ((ExpressionContext)_localctx).code =  "PUSHI "+(((ExpressionContext)_localctx).ENTIER!=null?((ExpressionContext)_localctx).ENTIER.getText():null)+"\n";
+				        ((ExpressionContext)_localctx).code =  "PUSHI "+((ExpressionContext)_localctx).ENTIER.getText()+"\n";
 				    
 				}
 				break;
@@ -367,7 +377,7 @@ public class calculetteParser extends Parser {
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(60);
+			setState(63);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
@@ -375,7 +385,7 @@ public class calculetteParser extends Parser {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(58);
+					setState(61);
 					_errHandler.sync(this);
 					switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
 					case 1:
@@ -384,9 +394,9 @@ public class calculetteParser extends Parser {
 						_localctx.a = _prevctx;
 						_localctx.a = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(48);
-						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
-						setState(49);
+						setState(51);
+						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
+						setState(52);
 						((ExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==T__3 || _la==T__4) ) {
@@ -397,10 +407,10 @@ public class calculetteParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(50);
-						((ExpressionContext)_localctx).b = expression(4);
+						setState(53);
+						((ExpressionContext)_localctx).b = expression(5);
 
-						                  ((ExpressionContext)_localctx).code =  evalexpr(((ExpressionContext)_localctx).a.code,((ExpressionContext)_localctx).op.getText(),((ExpressionContext)_localctx).b.code);
+						                  ((ExpressionContext)_localctx).code =  ((ExpressionContext)_localctx).a.code  + ((ExpressionContext)_localctx).b.code +  evalexpr(((ExpressionContext)_localctx).a.code,((ExpressionContext)_localctx).op.getText(),((ExpressionContext)_localctx).b.code);
 						              
 						}
 						break;
@@ -410,9 +420,9 @@ public class calculetteParser extends Parser {
 						_localctx.a = _prevctx;
 						_localctx.a = _prevctx;
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
-						setState(53);
-						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-						setState(54);
+						setState(56);
+						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
+						setState(57);
 						((ExpressionContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==T__5 || _la==T__6) ) {
@@ -423,17 +433,17 @@ public class calculetteParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(55);
-						((ExpressionContext)_localctx).b = expression(3);
+						setState(58);
+						((ExpressionContext)_localctx).b = expression(4);
 
-						                  ((ExpressionContext)_localctx).code =  evalexpr(((ExpressionContext)_localctx).a.code,((ExpressionContext)_localctx).op.getText(),((ExpressionContext)_localctx).b.code);
+						                  ((ExpressionContext)_localctx).code =  ((ExpressionContext)_localctx).a.code  + ((ExpressionContext)_localctx).b.code +  evalexpr(((ExpressionContext)_localctx).a.code,((ExpressionContext)_localctx).op.getText(),((ExpressionContext)_localctx).b.code);
 						              
 						}
 						break;
 					}
 					} 
 				}
-				setState(62);
+				setState(65);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
 			}
@@ -460,32 +470,33 @@ public class calculetteParser extends Parser {
 	private boolean expression_sempred(ExpressionContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 3);
+			return precpred(_ctx, 4);
 		case 1:
-			return precpred(_ctx, 2);
+			return precpred(_ctx, 3);
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\16B\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\16E\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\3\2\7\2\f\n\2\f\2\16\2\17\13\2\3\2\3\2\3\2\7\2\24\n"+
 		"\2\f\2\16\2\27\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\"\n\3\3\4"+
-		"\6\4%\n\4\r\4\16\4&\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5\61\n\5\3\5\3\5"+
-		"\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\7\5=\n\5\f\5\16\5@\13\5\3\5\2\3\b\6\2"+
-		"\4\6\b\2\5\4\2\3\3\n\n\3\2\6\7\3\2\b\t\2D\2\r\3\2\2\2\4!\3\2\2\2\6$\3"+
-		"\2\2\2\b\60\3\2\2\2\n\f\7\n\2\2\13\n\3\2\2\2\f\17\3\2\2\2\r\13\3\2\2\2"+
-		"\r\16\3\2\2\2\16\25\3\2\2\2\17\r\3\2\2\2\20\21\5\4\3\2\21\22\b\2\1\2\22"+
-		"\24\3\2\2\2\23\20\3\2\2\2\24\27\3\2\2\2\25\23\3\2\2\2\25\26\3\2\2\2\26"+
-		"\30\3\2\2\2\27\25\3\2\2\2\30\31\b\2\1\2\31\3\3\2\2\2\32\33\5\b\5\2\33"+
-		"\34\5\6\4\2\34\35\b\3\1\2\35\"\3\2\2\2\36\37\5\6\4\2\37 \b\3\1\2 \"\3"+
-		"\2\2\2!\32\3\2\2\2!\36\3\2\2\2\"\5\3\2\2\2#%\t\2\2\2$#\3\2\2\2%&\3\2\2"+
-		"\2&$\3\2\2\2&\'\3\2\2\2\'\7\3\2\2\2()\b\5\1\2)*\7\4\2\2*+\5\b\5\2+,\7"+
-		"\5\2\2,-\b\5\1\2-\61\3\2\2\2./\7\f\2\2/\61\b\5\1\2\60(\3\2\2\2\60.\3\2"+
-		"\2\2\61>\3\2\2\2\62\63\f\5\2\2\63\64\t\3\2\2\64\65\5\b\5\6\65\66\b\5\1"+
-		"\2\66=\3\2\2\2\678\f\4\2\289\t\4\2\29:\5\b\5\5:;\b\5\1\2;=\3\2\2\2<\62"+
-		"\3\2\2\2<\67\3\2\2\2=@\3\2\2\2><\3\2\2\2>?\3\2\2\2?\t\3\2\2\2@>\3\2\2"+
-		"\2\t\r\25!&\60<>";
+		"\6\4%\n\4\r\4\16\4&\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5\64"+
+		"\n\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\7\5@\n\5\f\5\16\5C\13\5\3"+
+		"\5\2\3\b\6\2\4\6\b\2\5\4\2\3\3\n\n\3\2\6\7\3\2\b\t\2H\2\r\3\2\2\2\4!\3"+
+		"\2\2\2\6$\3\2\2\2\b\63\3\2\2\2\n\f\7\n\2\2\13\n\3\2\2\2\f\17\3\2\2\2\r"+
+		"\13\3\2\2\2\r\16\3\2\2\2\16\25\3\2\2\2\17\r\3\2\2\2\20\21\5\4\3\2\21\22"+
+		"\b\2\1\2\22\24\3\2\2\2\23\20\3\2\2\2\24\27\3\2\2\2\25\23\3\2\2\2\25\26"+
+		"\3\2\2\2\26\30\3\2\2\2\27\25\3\2\2\2\30\31\b\2\1\2\31\3\3\2\2\2\32\33"+
+		"\5\b\5\2\33\34\5\6\4\2\34\35\b\3\1\2\35\"\3\2\2\2\36\37\5\6\4\2\37 \b"+
+		"\3\1\2 \"\3\2\2\2!\32\3\2\2\2!\36\3\2\2\2\"\5\3\2\2\2#%\t\2\2\2$#\3\2"+
+		"\2\2%&\3\2\2\2&$\3\2\2\2&\'\3\2\2\2\'\7\3\2\2\2()\b\5\1\2)*\7\4\2\2*+"+
+		"\5\b\5\2+,\7\5\2\2,-\b\5\1\2-\64\3\2\2\2./\7\t\2\2/\60\7\f\2\2\60\64\b"+
+		"\5\1\2\61\62\7\f\2\2\62\64\b\5\1\2\63(\3\2\2\2\63.\3\2\2\2\63\61\3\2\2"+
+		"\2\64A\3\2\2\2\65\66\f\6\2\2\66\67\t\3\2\2\678\5\b\5\789\b\5\1\29@\3\2"+
+		"\2\2:;\f\5\2\2;<\t\4\2\2<=\5\b\5\6=>\b\5\1\2>@\3\2\2\2?\65\3\2\2\2?:\3"+
+		"\2\2\2@C\3\2\2\2A?\3\2\2\2AB\3\2\2\2B\t\3\2\2\2CA\3\2\2\2\t\r\25!&\63"+
+		"?A";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
