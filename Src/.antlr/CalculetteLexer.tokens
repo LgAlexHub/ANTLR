@@ -1,0 +1,11 @@
+T__0=1
+T__1=2
+T__2=3
+NEWLINE=4
+WS=5
+ENTIER=6
+OPERATOR=7
+UNMATCH=8
+'('=1
+')'=2
+';'=3
