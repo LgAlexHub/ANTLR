@@ -1,7 +1,9 @@
 grammar calcul;
-
+@members {
+    private TablesSymboles tablesSymboles = new TablesSymboles();
+}
 @parser::members {
-    private String evalexpr (String x, String op, String y) {
+    private String evalexpr (String op) {
         if ( op.equals("*") ){
             return "MUL\n";
         } else if ( op.equals("+") ){
@@ -18,39 +20,64 @@ grammar calcul;
 
 }
 
-
 start
 	returns[ String code ]
 	@init { $code = new String(); }
-	@after { System.out.println($code); }:
-	NEWLINE* (instruction { $code += $instruction.code; })* { $code += "  HALT\n"; };
+// On initialise code, pour ensuite l'utiliser comme accumulateur 
+	@after { System.out.println($code); }: (decl { $code += $decl.code; })* NEWLINE* (
+		instruction { $code += $instruction.code; }
+	)* { $code += "  HALT\n"; };
+
+decl
+	returns[ String code ]:
+	TYPE IDENTIFIANT finInstruction {
+            // à compléter
+        };
+
+assignation
+	returns[ String code ]:
+	IDENTIFIANT '=' expression {  
+            // à compléter
+        };
 
 instruction
 	returns[ String code ]:
 	expression finInstruction { 
             $code=$expression.code;
         }
+	| decl finInstruction {
+        $code = $decl.code;
+    }
+	| assignation finInstruction { 
+            $code= $assignation.code;
+        }
 	| finInstruction {
             $code="";
         };
 finInstruction: ( NEWLINE | ';')+;
 
-expression returns [ String code ]: 
-    '('a=expression')'{
+expression
+	returns[ String code ]:
+	'(' a = expression ')' {
         $code = $a.code;
     }
-    |a=expression op=('*'|'/') b=expression{
-        $code = $a.code  + $b.code +  evalexpr($a.code,$op.getText(),$b.code);
-    }
-    |a=expression op=('+'|'-') b=expression{
-        $code = $a.code  + $b.code +  evalexpr($a.code,$op.getText(),$b.code);
-    }
-    |'-'ENTIER{$code = "PUSHI -"+$ENTIER.getText()+"\n";}
-    |ENTIER{
+	| oa = expression op = ('*' | '/') b = expression {
+        $code = $a.code  + $b.code +  evalexpr($op.getText());
+        }
+	| a = expression op = ('+' | '-') b = expression {
+        $code = $a.code  + $b.code +  evalexpr($op.getText());
+        }
+	| '-' ENTIER {
+        $code = "PUSHI -"+$ENTIER.getText()+"\n";
+        }
+	| ENTIER {
         $code = "PUSHI "+$ENTIER.getText()+"\n";
-    }
-    
-;
+        };
+
+//=== LEXER ===
+TYPE: 'int' | 'float';
+
+IDENTIFIANT: ('a' ..'z')+;
 
 NEWLINE: '\r'? '\n' -> skip;
 
