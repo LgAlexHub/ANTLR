@@ -64,10 +64,10 @@ instruction
 expression
 	returns[ String code ]:
     // utiliser le parser comme les opérators
-    'read' PARENTHESE_O IDENTIFIANT PARENTHESE_F NEWLINE ENTIER{
+    'read' PARENTHESE_O IDENTIFIANT PARENTHESE_F NEWLINE instruction{
         tablesSymboles.putVar($IDENTIFIANT.text,"int");
         AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
-        $code="PUSHI 0 \n READ \n"+ENTIER.code+"STOREG "+at.adresse+"\n";
+        $code="PUSHI 0 \n READ \n"+$instruction.code+"STOREG "+at.adresse+"\n";
     }
 	| PARENTHESE_O a = expression PARENTHESE_F {
         $code = $a.code;
