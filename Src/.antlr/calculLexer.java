@@ -81,9 +81,6 @@ public class calculLexer extends Lexer {
 	}
 
 
-	    private TablesSymboles tablesSymboles = new TablesSymboles();
-
-
 	public calculLexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);

@@ -1,8 +1,7 @@
 grammar calcul;
-@members {
-    private TablesSymboles tablesSymboles = new TablesSymboles();
-}
+
 @parser::members {
+    private TablesSymboles tablesSymboles = new TablesSymboles();
     private String evalexpr (String op) {
         if ( op.equals("*") ){
             return "MUL\n";
@@ -31,13 +30,15 @@ start
 decl
 	returns[ String code ]:
 	TYPE IDENTIFIANT finInstruction {
-            // à compléter
+            tablesSymboles.putVar($IDENTIFIANT.text,"int");
+            $code = "PUSHI 0 \n";
         };
 
 assignation
 	returns[ String code ]:
 	IDENTIFIANT '=' expression {  
-            // à compléter
+            AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
+            $code = "STOREG "+at.adresse+"\n";
         };
 
 instruction

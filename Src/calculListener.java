@@ -17,6 +17,26 @@ public interface calculListener extends ParseTreeListener {
 	 */
 	void exitStart(calculParser.StartContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link calculParser#decl}.
+	 * @param ctx the parse tree
+	 */
+	void enterDecl(calculParser.DeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link calculParser#decl}.
+	 * @param ctx the parse tree
+	 */
+	void exitDecl(calculParser.DeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link calculParser#assignation}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignation(calculParser.AssignationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link calculParser#assignation}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignation(calculParser.AssignationContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link calculParser#instruction}.
 	 * @param ctx the parse tree
 	 */
