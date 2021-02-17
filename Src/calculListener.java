@@ -47,16 +47,6 @@ public interface calculListener extends ParseTreeListener {
 	 */
 	void exitInstruction(calculParser.InstructionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link calculParser#finInstruction}.
-	 * @param ctx the parse tree
-	 */
-	void enterFinInstruction(calculParser.FinInstructionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link calculParser#finInstruction}.
-	 * @param ctx the parse tree
-	 */
-	void exitFinInstruction(calculParser.FinInstructionContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link calculParser#expression}.
 	 * @param ctx the parse tree
 	 */
@@ -66,4 +56,14 @@ public interface calculListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpression(calculParser.ExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link calculParser#finInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterFinInstruction(calculParser.FinInstructionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link calculParser#finInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitFinInstruction(calculParser.FinInstructionContext ctx);
 }

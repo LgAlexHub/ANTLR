@@ -63,18 +63,6 @@ public class calculBaseListener implements calculListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFinInstruction(calculParser.FinInstructionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFinInstruction(calculParser.FinInstructionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExpression(calculParser.ExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -82,6 +70,18 @@ public class calculBaseListener implements calculListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpression(calculParser.ExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFinInstruction(calculParser.FinInstructionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFinInstruction(calculParser.FinInstructionContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

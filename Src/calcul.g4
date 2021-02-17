@@ -24,19 +24,24 @@ start
 	@init { $code = new String(); }
 // On initialise code, pour ensuite l'utiliser comme accumulateur 
 	@after { System.out.println($code); }:(decl { $code += $decl.code; })* NEWLINE* (
-		instruction { $code += $instruction.code; }
-	)* { $code += "  HALT\n"; };
+		instruction { $code += $instruction.code;}
+	)*EOF { $code += "  HALT\n"; };
 
 decl
 	returns[ String code ]:
-	TYPE IDENTIFIANT finInstruction {
+    TYPE IDENTIFIANT '=' instruction{
+        tablesSymboles.putVar($IDENTIFIANT.text,"int");
+        $code=$instruction.code;
+    }
+    |TYPE IDENTIFIANT finInstruction {
             tablesSymboles.putVar($IDENTIFIANT.text,"int");
             $code = "PUSHI 0 \n";
-        };
+        }
+    ;
 
 assignation
 	returns[ String code ]:
-	IDENTIFIANT '=' expression {  
+	IDENTIFIANT '=' expression{  
             AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
             $code = $expression.code+"STOREG "+at.adresse+"\n";
         };
@@ -52,7 +57,7 @@ instruction
 	| finInstruction {
             $code="";
         };
-finInstruction: ( NEWLINE | ';')+;
+
 
 expression
 	returns[ String code ]:
@@ -73,6 +78,8 @@ expression
         };
 
 //=== LEXER ===
+finInstruction: ( NEWLINE | ';' )+;
+
 TYPE: 'int' | 'float';
 
 IDENTIFIANT: ('a' ..'z')+;
