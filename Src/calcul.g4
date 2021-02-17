@@ -21,7 +21,9 @@ grammar calcul;
 
 start
 	returns[ String code ]
-	@init { $code = new String(); }
+	@init { 
+        $code = new String();
+    }
 // On initialise code, pour ensuite l'utiliser comme accumulateur 
 	@after { System.out.println($code); }:(decl { $code += $decl.code; })* NEWLINE* (
 		instruction { $code += $instruction.code;}
@@ -61,10 +63,16 @@ instruction
 
 expression
 	returns[ String code ]:
-	'(' a = expression ')' {
+    // utiliser le parser comme les opérators
+    'read' PARENTHESE_O IDENTIFIANT PARENTHESE_F NEWLINE ENTIER{
+        tablesSymboles.putVar($IDENTIFIANT.text,"int");
+        AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
+        $code="PUSHI 0 \n READ \n"+ENTIER.code+"STOREG "+at.adresse+"\n";
+    }
+	| PARENTHESE_O a = expression PARENTHESE_F {
         $code = $a.code;
     }
-	| oa = expression op = ('*' | '/') b = expression {
+	| a = expression op = ('*' | '/') b = expression {
         $code = $a.code  + $b.code +  evalexpr($op.getText());
         }
 	| a = expression op = ('+' | '-') b = expression {
@@ -79,6 +87,11 @@ expression
 
 //=== LEXER ===
 finInstruction: ( NEWLINE | ';' )+;
+
+
+PARENTHESE_O :'(' ;
+
+PARENTHESE_F :')';
 
 TYPE: 'int' | 'float';
 
