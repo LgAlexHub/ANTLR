@@ -23,7 +23,7 @@ start
 	returns[ String code ]
 	@init { $code = new String(); }
 // On initialise code, pour ensuite l'utiliser comme accumulateur 
-	@after { System.out.println($code); }: (decl { $code += $decl.code; })* NEWLINE* (
+	@after { System.out.println($code); }:(decl { $code += $decl.code; })* NEWLINE* (
 		instruction { $code += $instruction.code; }
 	)* { $code += "  HALT\n"; };
 
@@ -38,7 +38,7 @@ assignation
 	returns[ String code ]:
 	IDENTIFIANT '=' expression {  
             AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
-            $code = "STOREG "+at.adresse+"\n";
+            $code = $expression.code+"STOREG "+at.adresse+"\n";
         };
 
 instruction
@@ -46,9 +46,6 @@ instruction
 	expression finInstruction { 
             $code=$expression.code;
         }
-	| decl finInstruction {
-        $code = $decl.code;
-    }
 	| assignation finInstruction { 
             $code= $assignation.code;
         }
