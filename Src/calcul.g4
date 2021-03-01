@@ -1,6 +1,13 @@
 grammar calcul;
 
 @parser::members {
+     private int _cur_label = 1;
+    /** générateur de nom d'étiquettes pour les boucles */
+    private String getNewLabel() { 
+        return "B" +(_cur_label++); 
+    }
+    //...
+
     private TablesSymboles tablesSymboles = new TablesSymboles();
     private String evalexpr (String op) {
         if ( op.equals("*") ){
@@ -17,6 +24,18 @@ grammar calcul;
         }
     }
 
+    private String input_func(String func, String arg){
+        AdresseType at = tablesSymboles.getAdresseType(arg);
+        String res = ""; 
+        if (func == "READ"){
+            if (at == null)  throw new IllegalArgumentException("Adresse inconnu ou variable non déclarée");
+            else res+=func+" \n STOREG "+tablesSymboles.getAdresseType(arg).adresse+" \n";
+        }else{
+            if (at == null)  throw new IllegalArgumentException("Adresse inconnu ou variable non déclarée");
+            else res+="PUSHG "+tablesSymboles.getAdresseType(arg).adresse+" \n"+func+" \nPOP \n";
+        }
+        return res;
+    }
 }
 
 start
@@ -24,7 +43,7 @@ start
 	@init { 
         $code = new String();
     }
-// On initialise code, pour ensuite l'utiliser comme accumulateur 
+    // On initialise code, pour ensuite l'utiliser comme accumulateur 
 	@after { System.out.println($code); }:(decl { $code += $decl.code; })* NEWLINE* (
 		instruction { $code += $instruction.code;}
 	)*EOF { $code += "  HALT\n"; };
@@ -48,6 +67,8 @@ assignation
             $code = $expression.code+"STOREG "+at.adresse+"\n";
         };
 
+
+
 instruction
 	returns[ String code ]:
 	expression finInstruction { 
@@ -63,11 +84,8 @@ instruction
 
 expression
 	returns[ String code ]:
-    // utiliser le parser comme les opérators
-    'read' PARENTHESE_O IDENTIFIANT PARENTHESE_F NEWLINE instruction{
-        tablesSymboles.putVar($IDENTIFIANT.text,"int");
-        AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
-        $code="PUSHI 0 \n READ \n"+$instruction.code+"STOREG "+at.adresse+"\n";
+    INPUT_FUNC PARENTHESE_O IDENTIFIANT PARENTHESE_F {
+        $code = input_func($INPUT_FUNC.text, $IDENTIFIANT.text);
     }
 	| PARENTHESE_O a = expression PARENTHESE_F {
         $code = $a.code;
@@ -78,16 +96,28 @@ expression
 	| a = expression op = ('+' | '-') b = expression {
         $code = $a.code  + $b.code +  evalexpr($op.getText());
         }
-	| '-' ENTIER {
+    
+
+    |LOOP_WORD   {
+        
+    }
+	| '-' PARENTHESE_O IDENTIFIANT PARENTHESE_F {
         $code = "PUSHI -"+$ENTIER.getText()+"\n";
         }
 	| ENTIER {
         $code = "PUSHI "+$ENTIER.getText()+"\n";
         };
 
+condition returns [String code]:
+    'true' {$code="PUSHI 0\n"}
+    |
+    'false'{$code="PUSHI 0\n"}
+;
+
 //=== LEXER ===
 finInstruction: ( NEWLINE | ';' )+;
 
+INPUT_FUNC : 'READ'|'WRITE' ;
 
 PARENTHESE_O :'(' ;
 
@@ -96,6 +126,8 @@ PARENTHESE_F :')';
 TYPE: 'int' | 'float';
 
 IDENTIFIANT: ('a' ..'z')+;
+
+LOOP_WORD : 'WHILE'|'FOR';
 
 NEWLINE: '\r'? '\n' -> skip;
 
