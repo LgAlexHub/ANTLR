@@ -24,7 +24,7 @@ grammar calcul;
         }
     }
 
-    private String input_func(String func, String arg){
+    private String input_func(String func, String...args){
         AdresseType at = tablesSymboles.getAdresseType(arg);
         String res = ""; 
         if (func == "READ"){
@@ -96,11 +96,6 @@ expression
 	| a = expression op = ('+' | '-') b = expression {
         $code = $a.code  + $b.code +  evalexpr($op.getText());
         }
-    
-
-    |LOOP_WORD   {
-        
-    }
 	| '-' PARENTHESE_O IDENTIFIANT PARENTHESE_F {
         $code = "PUSHI -"+$ENTIER.getText()+"\n";
         }
@@ -109,9 +104,9 @@ expression
         };
 
 condition returns [String code]:
-    'true' {$code="PUSHI 0\n"}
+    'true' {$code="PUSHI 0\n";}
     |
-    'false'{$code="PUSHI 0\n"}
+    'false'{$code="PUSHI 0\n";}
 ;
 
 //=== LEXER ===

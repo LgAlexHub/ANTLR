@@ -1,0 +1,25 @@
+Que faire quand on rencontre cette expression ? 
+1.Posé le label de jump 
+	$code ="LABEL "+getNewLabel()+"\n;
+2.Exécuter le contenu de la boucle 
+	instruction.code;
+While (condition) // mono instruction 
+
+
+TRUE|FALSE
+= 
+> 
+>=
+<=
+
+
+
+LOOP_WORD : 'WHILE'|'FOR';
+ 
+
+CONDITION {
+	OPERATEUR 'true'|'false'
+	comparaison d'équivalence expression = expression 2
+	ou superiorité inférioté stritcte ou non 
+
+}
