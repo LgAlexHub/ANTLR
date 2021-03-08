@@ -1,0 +1,6 @@
+*.class
+*Listener.java
+*Lexer.java
+*.interp
+*.mvap
+*.tokens
