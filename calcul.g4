@@ -24,16 +24,11 @@ grammar calcul;
         }
     }
 
-    private String input_func(String func, String arg){
+    private String read_func(String arg){
         AdresseType at = tablesSymboles.getAdresseType(arg);
         String res = ""; 
-        if (func == "READ"){
-            if (at == null)  throw new IllegalArgumentException("Adresse inconnu ou variable non déclarée");
-            else res+=func+" \n STOREG "+tablesSymboles.getAdresseType(arg).adresse+" \n";
-        }else{
-            if (at == null)  throw new IllegalArgumentException("Adresse inconnu ou variable non déclarée");
-            else res+="PUSHG "+tablesSymboles.getAdresseType(arg).adresse+" \n"+func+" \nPOP \n";
-        }
+        if (at == null)  throw new IllegalArgumentException("Adresse inconnu ou variable non déclarée");
+        else res+="READ \n STOREG "+tablesSymboles.getAdresseType(arg).adresse+" \n";
         return res;
     }
 }
@@ -80,8 +75,11 @@ instruction
 
 expression
 	returns[ String code ]:
-	INPUT_FUNC PARENTHESE_O a = expression PARENTHESE_F {
-        $code = $a.code 
+	('READ'|'read') PARENTHESE_O IDENTIFIANT PARENTHESE_F{
+        $code = read_func($IDENTIFIANT.text);
+    }
+    |('WRITE'|'write') a=expression{
+        $code = $a.code + "WRITE \n";
     }
 	| PARENTHESE_O a = expression PARENTHESE_F {
         $code = $a.code;
@@ -92,20 +90,24 @@ expression
 	| a = expression op = ('+' | '-') b = expression {
         $code = $a.code  + $b.code +  evalexpr($op.getText());
         }
-	| '-' ENTIER {
+    |'-' ENTIER {
         $code = "PUSHI -"+$ENTIER.getText()+"\n";
         }
 	| ENTIER {
         $code = "PUSHI "+$ENTIER.getText()+"\n";
-        };
+        }
+	| '-' IDENTIFIANT {
+        $code = "PUSHG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse + "PUSHI -1\n MULT \n";
+    }
+	| IDENTIFIANT {
+        $code = "PUSHG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse+"\n";
+    };
 
 condition
 	returns[String code]: 'true' {$code="PUSHI 0\n";} | 'false' {$code="PUSHI 0\n";};
 
 //=== LEXER ===
 finInstruction: ( NEWLINE | ';')+;
-
-INPUT_FUNC: 'READ' | 'WRITE';
 
 PARENTHESE_O: '(';
 
