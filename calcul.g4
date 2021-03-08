@@ -23,6 +23,25 @@ grammar calcul;
            throw new IllegalArgumentException("Opérateur arithmétique incorrect : '"+op+"'");
         }
     }
+    
+        private String evalexprconditions (String op) {
+        if ( op.equals(">") ){
+            return "SUP\n";
+        } else if ( op.equals("<") ){
+            return "INF\n";
+        } else if ( op.equals("<=") ){
+            return "INFEQ\n";
+        } else if ( op.equals(">=") ){
+            return "SUPEQUAL\n";
+        } else if ( op.equals("==") ){
+            return "EQUAL\n";
+        }else if ( op.equals("!=") ){
+            return "NEQ\n";
+        } else {
+           System.err.println("Opérateur arithmétique incorrect : '"+op+"'");
+           throw new IllegalArgumentException("Opérateur arithmétique incorrect : '"+op+"'");
+        }
+    }
 
     private String read_func(String arg){
         AdresseType at = tablesSymboles.getAdresseType(arg);
@@ -75,10 +94,10 @@ instruction
 
 expression
 	returns[ String code ]:
-	('READ'|'read') PARENTHESE_O IDENTIFIANT PARENTHESE_F{
+	('READ' | 'read') PARENTHESE_O IDENTIFIANT PARENTHESE_F {
         $code = read_func($IDENTIFIANT.text);
     }
-    |('WRITE'|'write') a=expression{
+	| ('WRITE' | 'write') a = expression {
         $code = $a.code + "WRITE \n";
     }
 	| PARENTHESE_O a = expression PARENTHESE_F {
@@ -90,7 +109,7 @@ expression
 	| a = expression op = ('+' | '-') b = expression {
         $code = $a.code  + $b.code +  evalexpr($op.getText());
         }
-    |'-' ENTIER {
+	| '-' ENTIER {
         $code = "PUSHI -"+$ENTIER.getText()+"\n";
         }
 	| ENTIER {
@@ -104,13 +123,22 @@ expression
     };
 
 condition
-	returns[String code]: 'true' {$code="PUSHI 0\n";} | 'false' {$code="PUSHI 0\n";};
-
+	returns[String code]:
+	'true' {
+            $code="PUSHI 0\n";
+        }
+	| 'false' {
+                $code="PUSHI 0\n";
+            } | a=expression OPERATORLOG b=expression{
+                $code=$a.code + $b.code + evalexprconditions($OPERATORLOG.text)
+            };
 
 loop
-    :   
-        'while' '(' condition ')' '{' (instruction)* '}' 
-    ;
+	returns[String code]:
+	'while' PARENTHESE_O a=condition PARENTHESE_F '{' (instruction)* '}' {
+            $code="LABEL "+getNewLabel()+" /n" + $instruction.code + $a.code + "JUMPF B"+_cur_label;
+
+        };
 
 //=== LEXER ===
 finInstruction: ( NEWLINE | ';')+;
@@ -132,5 +160,7 @@ WS: (' ' | '\t')+ -> skip;
 ENTIER: ('0' ..'9')+;
 
 OPERATOR: '+' | '-' | '*' | '/';
+
+OPERATORLOG: '<' | '>' | '<=' | '>=' | '==' | '!=';
 
 UNMATCH: . -> skip;
