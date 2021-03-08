@@ -1,4 +1,4 @@
-// Generated from c:\Users\alexl\Documents\Licence3\théorie_comppil\TP59\Src\calcul.g4 by ANTLR 4.8
+// Generated from calcul.g4 by ANTLR 4.9
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class calculParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.9", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -153,6 +153,14 @@ public class calculParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_start; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).enterStart(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).exitStart(this);
+		}
 	}
 
 	public final StartContext start() throws RecognitionException {
@@ -246,6 +254,14 @@ public class calculParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_decl; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).enterDecl(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).exitDecl(this);
+		}
 	}
 
 	public final DeclContext decl() throws RecognitionException {
@@ -312,6 +328,14 @@ public class calculParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_assignation; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).enterAssignation(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).exitAssignation(this);
+		}
 	}
 
 	public final AssignationContext assignation() throws RecognitionException {
@@ -360,6 +384,14 @@ public class calculParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_instruction; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).enterInstruction(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).exitInstruction(this);
+		}
 	}
 
 	public final InstructionContext instruction() throws RecognitionException {
@@ -437,6 +469,14 @@ public class calculParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expression; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).enterExpression(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).exitExpression(this);
+		}
 	}
 
 	public final ExpressionContext expression() throws RecognitionException {
@@ -644,6 +684,14 @@ public class calculParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_condition; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).enterCondition(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).exitCondition(this);
+		}
 	}
 
 	public final ConditionContext condition() throws RecognitionException {
@@ -693,6 +741,14 @@ public class calculParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_finInstruction; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).enterFinInstruction(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof calculListener ) ((calculListener)listener).exitFinInstruction(this);
+		}
 	}
 
 	public final FinInstructionContext finInstruction() throws RecognitionException {
