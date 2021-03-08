@@ -24,7 +24,7 @@ grammar calcul;
         }
     }
 
-    private String input_func(String func, String...args){
+    private String input_func(String func, String arg){
         AdresseType at = tablesSymboles.getAdresseType(arg);
         String res = ""; 
         if (func == "READ"){
@@ -43,31 +43,28 @@ start
 	@init { 
         $code = new String();
     }
-    // On initialise code, pour ensuite l'utiliser comme accumulateur 
-	@after { System.out.println($code); }:(decl { $code += $decl.code; })* NEWLINE* (
+// On initialise code, pour ensuite l'utiliser comme accumulateur 
+	@after { System.out.println($code); }: (decl { $code += $decl.code; })* NEWLINE* (
 		instruction { $code += $instruction.code;}
-	)*EOF { $code += "  HALT\n"; };
+	)* EOF { $code += "  HALT\n"; };
 
 decl
 	returns[ String code ]:
-    TYPE IDENTIFIANT '=' instruction{
+	TYPE IDENTIFIANT '=' instruction {
         tablesSymboles.putVar($IDENTIFIANT.text,"int");
         $code=$instruction.code;
     }
-    |TYPE IDENTIFIANT finInstruction {
+	| TYPE IDENTIFIANT finInstruction {
             tablesSymboles.putVar($IDENTIFIANT.text,"int");
             $code = "PUSHI 0 \n";
-        }
-    ;
+        };
 
 assignation
 	returns[ String code ]:
-	IDENTIFIANT '=' expression{  
+	IDENTIFIANT '=' expression {  
             AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
             $code = $expression.code+"STOREG "+at.adresse+"\n";
         };
-
-
 
 instruction
 	returns[ String code ]:
@@ -81,11 +78,10 @@ instruction
             $code="";
         };
 
-
 expression
 	returns[ String code ]:
-    INPUT_FUNC PARENTHESE_O IDENTIFIANT PARENTHESE_F {
-        $code = input_func($INPUT_FUNC.text, $IDENTIFIANT.text);
+	INPUT_FUNC PARENTHESE_O a = expression PARENTHESE_F {
+        $code = $a.code 
     }
 	| PARENTHESE_O a = expression PARENTHESE_F {
         $code = $a.code;
@@ -96,33 +92,30 @@ expression
 	| a = expression op = ('+' | '-') b = expression {
         $code = $a.code  + $b.code +  evalexpr($op.getText());
         }
-	| '-' PARENTHESE_O IDENTIFIANT PARENTHESE_F {
+	| '-' ENTIER {
         $code = "PUSHI -"+$ENTIER.getText()+"\n";
         }
 	| ENTIER {
         $code = "PUSHI "+$ENTIER.getText()+"\n";
         };
 
-condition returns [String code]:
-    'true' {$code="PUSHI 0\n";}
-    |
-    'false'{$code="PUSHI 0\n";}
-;
+condition
+	returns[String code]: 'true' {$code="PUSHI 0\n";} | 'false' {$code="PUSHI 0\n";};
 
 //=== LEXER ===
-finInstruction: ( NEWLINE | ';' )+;
+finInstruction: ( NEWLINE | ';')+;
 
-INPUT_FUNC : 'READ'|'WRITE' ;
+INPUT_FUNC: 'READ' | 'WRITE';
 
-PARENTHESE_O :'(' ;
+PARENTHESE_O: '(';
 
-PARENTHESE_F :')';
+PARENTHESE_F: ')';
 
 TYPE: 'int' | 'float';
 
 IDENTIFIANT: ('a' ..'z')+;
 
-LOOP_WORD : 'WHILE'|'FOR';
+LOOP_WORD: 'WHILE' | 'FOR';
 
 NEWLINE: '\r'? '\n' -> skip;
 
