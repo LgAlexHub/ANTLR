@@ -106,6 +106,12 @@ expression
 condition
 	returns[String code]: 'true' {$code="PUSHI 0\n";} | 'false' {$code="PUSHI 0\n";};
 
+
+loop
+    :   
+        'while' '(' condition ')' '{' (instruction)* '}' 
+    ;
+
 //=== LEXER ===
 finInstruction: ( NEWLINE | ';')+;
 
