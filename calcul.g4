@@ -86,7 +86,7 @@ instruction
             $code=$expression.code;
         }
 	| assignation finInstruction { 
-            $code= $assignation.code;
+            $code=$assignation.code;
         }
     | loop {
           $code = $loop.code;
@@ -107,10 +107,14 @@ expression
         $code = $a.code;
     }
 	| a = expression op = ('*' | '/') b = expression {
-        $code = $a.code  + $b.code +  evalexpr($op.getText());
+        $code= $a.code;
+        $code+=$b.code;
+        $code+= evalexpr($op.getText());
         }
 	| a = expression op = ('+' | '-') b = expression {
-        $code = $a.code  + $b.code +  evalexpr($op.getText());
+        $code= $a.code;
+        $code+=$b.code;
+        $code+=evalexpr($op.getText());
         }
 	| '-' ENTIER {
         $code = "PUSHI -"+$ENTIER.getText()+"\n";
@@ -119,7 +123,8 @@ expression
         $code = "PUSHI "+$ENTIER.getText()+"\n";
         }
 	| '-' IDENTIFIANT {
-        $code = "PUSHG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse + "PUSHI -1\n MULT \n";
+        $code="PUSHG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse;
+        $code+="PUSHI -1\n MULT \n";
     }
 	| IDENTIFIANT {
         $code = "PUSHG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse+"\n";
@@ -132,7 +137,9 @@ condition
 	}| 'false' {
         $code="PUSHI 0\n";
     } | a=expression OPERATORLOG b=expression{
-        $code=$a.code + $b.code + evalexprconditions($OPERATORLOG.text);
+        $code=$a.code;
+        $code+=$b.code;
+        $code+=evalexprconditions($OPERATORLOG.text);
     };
 
 loop
