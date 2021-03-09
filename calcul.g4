@@ -88,13 +88,16 @@ instruction
 	| assignation finInstruction { 
             $code= $assignation.code;
         }
+    | loop {
+          $code = $loop.code;
+    }
 	| finInstruction {
             $code="";
         };
 
 expression
 	returns[ String code ]:
-	('READ' | 'read') PARENTHESE_O IDENTIFIANT PARENTHESE_F {
+	|('READ' | 'read') PARENTHESE_O IDENTIFIANT PARENTHESE_F {
         $code = read_func($IDENTIFIANT.text);
     }
 	| ('WRITE' | 'write') a = expression {
@@ -125,19 +128,23 @@ expression
 condition
 	returns[String code]:
 	'true' {
-            $code="PUSHI 0\n";
-        }
-	| 'false' {
-                $code="PUSHI 0\n";
-            } | a=expression OPERATORLOG b=expression{
-                $code=$a.code + $b.code + evalexprconditions($OPERATORLOG.text)
-            };
+        $code="PUSHI 1\n";
+	}| 'false' {
+        $code="PUSHI 0\n";
+    } | a=expression OPERATORLOG b=expression{
+        $code=$a.code + $b.code + evalexprconditions($OPERATORLOG.text);
+    };
 
 loop
 	returns[String code]:
-	'while' PARENTHESE_O a=condition PARENTHESE_F '{' (instruction)* '}' {
-            $code="LABEL "+getNewLabel()+" /n" + $instruction.code + $a.code + "JUMPF B"+_cur_label;
-
+	'while' PARENTHESE_O a=condition PARENTHESE_F ('{' (instruction)* '}'| instruction) {
+            $code="LABEL "+getNewLabel()+"\n";
+            $code+=$a.code;
+            $code+="JUMPF B"+(_cur_label)+"\n";
+            $code+=$instruction.code;
+            $code+=$a.code;
+            $code+="JUMP B"+(_cur_label-1)+"\n";
+            $code+="LABEL "+getNewLabel()+"\n";
         };
 
 //=== LEXER ===
