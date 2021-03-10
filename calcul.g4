@@ -82,15 +82,19 @@ assignation
 
 instruction
 	returns[ String code ]:
-	expression finInstruction { 
+    branchements{
+        $code=$branchements.code;
+    }
+    | loop {
+          $code = $loop.code;
+    }
+	|expression finInstruction { 
             $code=$expression.code;
         }
 	| assignation finInstruction { 
             $code=$assignation.code;
         }
-    | loop {
-          $code = $loop.code;
-    }
+    
 	| finInstruction {
             $code="";
         };
@@ -153,6 +157,31 @@ loop
             $code+="JUMP B"+(_cur_label-1)+"\n";
             $code+="LABEL "+getNewLabel()+"\n";
         };
+
+branchements
+    returns[String code]:
+        ('if'|'IF') PARENTHESE_O a=condition PARENTHESE_F b=bloc_code ('else'|'ELSE') c=bloc_code {
+            $code = $a.code;
+            $code+="JUMPF "+getNewLabel()+"\n";
+            $code+=$b.code;
+            $code+="JUMP "+getNewLabel()+"\n";
+            $code+="LABEL B"+(_cur_label-2)+"\n";
+            $code+=$c.code;
+            $code+="LABEL B"+(_cur_label-1)+"\n";
+        }|('if'|'IF') PARENTHESE_O a=condition PARENTHESE_F b=bloc_code{
+            $code = $a.code;
+            $code+="JUMPF "+getNewLabel()+"\n";
+            $code+=$b.code;
+            $code+="LABEL "+(_cur_label-1)+"\n";
+        }
+    ;
+
+bloc_code
+    returns[String code]:
+        ('{' (instruction)* '}'| instruction){
+            $code=$instruction.code;
+        }
+    ;
 
 //=== LEXER ===
 finInstruction: ( NEWLINE | ';')+;
