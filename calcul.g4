@@ -148,7 +148,7 @@ expression
         }
 	| '-' IDENTIFIANT {
         $code="PUSHG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse;
-        $code+="PUSHI -1\n MULT \n";
+        $code+="PUSHI -1\n MUL\n";
     }
 	| IDENTIFIANT {
         $code = "PUSHG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse+"\n";
@@ -167,8 +167,8 @@ condition
     }
     |'!'condition{
         $code =$condition.code;
-        $code+="PUSHI -1\n";
-        $code+="MULT\n";
+        $code+="PUSHI 0\n";
+        $code+="EQUAL\n";
     }
     |c=condition '&&' d=condition{
         $code=$c.code;
