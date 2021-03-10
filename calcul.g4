@@ -75,44 +75,44 @@ decl
 
 assignation
 	returns[ String code ]:
-    IDENTIFIANT '+=' expression{
+	IDENTIFIANT '+=' expression {
             AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
             $code ="PUSHG "+at.adresse+"\n";
             $code+=$expression.code;
             $code+="ADD \n";
             $code+="STOREG "+at.adresse+"\n";
     }
-    |IDENTIFIANT '++'{
+	| IDENTIFIANT '++' {
         AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
         $code ="PUSHG "+at.adresse+"\n";
         $code+="PUSHI 1\n";
         $code+="ADD\n";
         $code+="STOREG "+at.adresse+"\n";
     }
-    |IDENTIFIANT '--'{
+	| IDENTIFIANT '--' {
         AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
         $code ="PUSHG "+at.adresse+"\n";
         $code+="PUSHI 1\n";
         $code+="SUB\n";
         $code+="STOREG "+at.adresse+"\n";
     }
-	|IDENTIFIANT '=' expression {  
+	| IDENTIFIANT '=' expression {  
             AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
             $code = $expression.code+"STOREG "+at.adresse+"\n";
     };
 
 instruction
 	returns[ String code ]:
-    assignation finInstruction { 
+	assignation finInstruction { 
             $code=$assignation.code;
     }
-    |branchements{
+	| branchements {
         $code=$branchements.code;
     }
-    | loop {
+	| loop {
           $code = $loop.code;
     }
-	|expression finInstruction { 
+	| expression finInstruction { 
             $code=$expression.code;
     }
 	| finInstruction {
@@ -121,7 +121,7 @@ instruction
 
 expression
 	returns[ String code ]:
-	|('READ' | 'read') PARENTHESE_O IDENTIFIANT PARENTHESE_F {
+	| ('READ' | 'read') PARENTHESE_O IDENTIFIANT PARENTHESE_F {
         $code = read_func($IDENTIFIANT.text);
     }
 	| ('WRITE' | 'write') a = expression {
@@ -158,9 +158,11 @@ condition
 	returns[String code]:
 	'true' {
         $code="PUSHI 1\n";
-	}| 'false' {
+	}
+	| 'false' {
         $code="PUSHI 0\n";
-    } | a=expression OPERATORLOG b=expression{
+    }
+	| a = expression OPERATORLOG b = expression {
         $code=$a.code;
         $code+=$b.code;
         $code+=evalexprconditions($OPERATORLOG.text);
@@ -168,15 +170,16 @@ condition
 
 loop
 	returns[String code]:
-	('while'|'WHILE') PARENTHESE_O a=condition PARENTHESE_F ('{' (instruction)* '}'| instruction) {
+	('while' | 'WHILE') PARENTHESE_O a = condition PARENTHESE_F bloc_code {
             $code="LABEL "+getNewLabel()+"\n";
             $code+=$a.code;
             $code+="JUMPF B"+(_cur_label)+"\n";
-            $code+=$instruction.code;
+            $code+=$bloc_code.code;
             $code+=$a.code;
             $code+="JUMP B"+(_cur_label-1)+"\n";
             $code+="LABEL "+getNewLabel()+"\n";
-    }|('for'|'FOR') PARENTHESE_O d=assignation ';' e=condition ';' f=assignation PARENTHESE_F g=bloc_code{
+    }
+	| ('for' | 'FOR') PARENTHESE_O d = assignation ';' e = condition ';' f = assignation PARENTHESE_F g = bloc_code {
         $code=$d.code;
         $code+="LABEL "+getNewLabel()+"\n";
         $code+=$e.code;
@@ -185,11 +188,21 @@ loop
         $code+=$f.code;
         $code+="JUMP B"+(_cur_label-1)+"\n";
         $code+="LABEL "+getNewLabel()+"\n";
+    }| ('repeat'|'REPEAT') g=bloc_code ('until'|'UNTIL') PARENTHESE_O h=condition PARENTHESE_F{
+        $code ="LABEL "+getNewLabel();
+        $code+=$h.code;
+        $code+="JUMPF B"+(_cur_label)+"\n";
+        $code+=$g.code;
+        $code+="JUMP B"+(_cur_label-1)+"\n";
+        $code+="LABEL "+getNewLabel()+"\n";
     };
 
 branchements
-    returns[String code]:
-        ('if'|'IF') PARENTHESE_O a=condition PARENTHESE_F b=bloc_code ('else'|'ELSE') c=bloc_code {
+	returns[String code]:
+	('if' | 'IF') PARENTHESE_O a = condition PARENTHESE_F b = bloc_code (
+		'else'
+		| 'ELSE'
+	) c = bloc_code {
             $code = $a.code;
             $code+="JUMPF "+getNewLabel()+"\n";
             $code+=$b.code;
@@ -197,20 +210,19 @@ branchements
             $code+="LABEL B"+(_cur_label-2)+"\n";
             $code+=$c.code;
             $code+="LABEL B"+(_cur_label-1)+"\n";
-        }|('if'|'IF') PARENTHESE_O a=condition PARENTHESE_F b=bloc_code{
+        }
+	| ('if' | 'IF') PARENTHESE_O a = condition PARENTHESE_F b = bloc_code {
             $code = $a.code;
             $code+="JUMPF "+getNewLabel()+"\n";
             $code+=$b.code;
             $code+="LABEL "+(_cur_label-1)+"\n";
-        }
-    ;
+        };
 
 bloc_code
-    returns[String code]:
-        ('{' (instruction)* '}'| instruction){
+	returns[String code]:
+	('{' (instruction)* '}' | instruction) {
             $code=$instruction.code;
-        }
-    ;
+        };
 
 //=== LEXER ===
 finInstruction: ( NEWLINE | ';')+;

@@ -1,9 +1,9 @@
+*.tokens
 *.class
 *Listener.java
 *Lexer.java
-*.interp
+*interp*
 *.mvap
-*.tokens
 .antlr
 sortie
 note
