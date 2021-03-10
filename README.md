@@ -9,11 +9,10 @@
 
 
 # Pas encore réalisé : 
-### Traitement des expressions logiques
-### Le retour des boucles : le for et le repeat ... until
-### Analyse syntaxique des fonctions
-### Le bloc d'activation : paramètres, sortie etc
-### Support minimal des flottants
-### Tester sur quelques programmes classiques
-###  Autres améliorations
-###
+### [ ]Traitement des expressions logiques
+### [x] Le retour des boucles : le for et le repeat ... until
+### [ ]Analyse syntaxique des fonctions
+### [ ]Le bloc d'activation : paramètres, sortie etc
+### [ ]Support minimal des flottants
+### [ ]Tester sur quelques programmes classiques
+### [ ] Autres améliorations
