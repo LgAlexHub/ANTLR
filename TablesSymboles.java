@@ -68,7 +68,7 @@ class TablesSymboles {
 		 return new AdresseType(a.adresse - (_tableLocale.getSize() + 2), a.type);
 	    }
 	}
-    System.err.println("DEBUG =>"+this._tableGlobale);
+    //System.err.println("DEBUG =>"+this._tableGlobale);
 	System.err.println(symbol + " pas trouvé en local");
 	return null;
     }

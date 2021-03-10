@@ -75,14 +75,38 @@ decl
 
 assignation
 	returns[ String code ]:
-	IDENTIFIANT '=' expression {  
+    IDENTIFIANT '+=' expression{
+            AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
+            $code ="PUSHG "+at.adresse+"\n";
+            $code+=$expression.code;
+            $code+="ADD \n";
+            $code+="STOREG "+at.adresse+"\n";
+    }
+    |IDENTIFIANT '++'{
+        AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
+        $code ="PUSHG "+at.adresse+"\n";
+        $code+="PUSHI 1\n";
+        $code+="ADD\n";
+        $code+="STOREG "+at.adresse+"\n";
+    }
+    |IDENTIFIANT '--'{
+        AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
+        $code ="PUSHG "+at.adresse+"\n";
+        $code+="PUSHI 1\n";
+        $code+="SUB\n";
+        $code+="STOREG "+at.adresse+"\n";
+    }
+	|IDENTIFIANT '=' expression {  
             AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
             $code = $expression.code+"STOREG "+at.adresse+"\n";
-        };
+    };
 
 instruction
 	returns[ String code ]:
-    branchements{
+    assignation finInstruction { 
+            $code=$assignation.code;
+    }
+    |branchements{
         $code=$branchements.code;
     }
     | loop {
@@ -90,11 +114,7 @@ instruction
     }
 	|expression finInstruction { 
             $code=$expression.code;
-        }
-	| assignation finInstruction { 
-            $code=$assignation.code;
-        }
-    
+    }
 	| finInstruction {
             $code="";
         };
