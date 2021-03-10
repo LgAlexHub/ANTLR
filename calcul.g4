@@ -125,7 +125,7 @@ expression
         $code = read_func($IDENTIFIANT.text);
     }
 	| ('WRITE' | 'write') a = expression {
-        $code = $a.code + "WRITE \nPOP\n";
+        $code = $a.code + "WRITE\nPOP\n";
     }
 	| PARENTHESE_O a = expression PARENTHESE_F {
         $code = $a.code;
@@ -162,6 +162,28 @@ condition
 	| 'false' {
         $code="PUSHI 0\n";
     }
+    |PARENTHESE_O k=condition PARENTHESE_F{
+        $code=$k.code;
+    }
+    |'!'condition{
+        $code =$condition.code;
+        $code+="PUSHI -1\n";
+        $code+="MULT\n";
+    }
+    |c=condition '&&' d=condition{
+        $code=$c.code;
+        $code+=$d.code;
+        $code+="MUL\n";
+        $code+="PUSHI 1\n";
+        $code+="EQUAL\n";
+    }
+    |g=condition '||' e=condition{
+        $code=$g.code;
+        $code+=$e.code;
+        $code+="ADD\n";
+        $code+="PUSHI 1\n";
+        $code+="SUPEQ\n";
+    }
 	| a = expression OPERATORLOG b = expression {
         $code=$a.code;
         $code+=$b.code;
@@ -170,7 +192,7 @@ condition
 
 loop
 	returns[String code]:
-	('while' | 'WHILE') PARENTHESE_O a = condition PARENTHESE_F bloc_code {
+	('while' | 'WHILE') a = condition  bloc_code {
             $code="LABEL "+getNewLabel()+"\n";
             $code+=$a.code;
             $code+="JUMPF B"+(_cur_label)+"\n";
