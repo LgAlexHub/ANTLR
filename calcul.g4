@@ -148,7 +148,7 @@ condition
 
 loop
 	returns[String code]:
-	'while' PARENTHESE_O a=condition PARENTHESE_F ('{' (instruction)* '}'| instruction) {
+	('while'|'WHILE') PARENTHESE_O a=condition PARENTHESE_F ('{' (instruction)* '}'| instruction) {
             $code="LABEL "+getNewLabel()+"\n";
             $code+=$a.code;
             $code+="JUMPF B"+(_cur_label)+"\n";
@@ -156,7 +156,9 @@ loop
             $code+=$a.code;
             $code+="JUMP B"+(_cur_label-1)+"\n";
             $code+="LABEL "+getNewLabel()+"\n";
-        };
+    }|('for'|'FOR') PARENTHESE_O d=assignation ';' e=condition ';' f=assignation PARENTHESE_F{
+
+    };
 
 branchements
     returns[String code]:

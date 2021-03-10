@@ -4,4 +4,14 @@
 #C ommandes pour lancer la grammaire depuis mon ordi : 
 ## java org.antlr.v4.Tool *.g4 
 ## javac *.java .\AdresseType.java .\TablesSymboles.java .\TableSymboles.java 
-## java -cp ".;C:\Users\lib\antlr-4.9-complete.jar" org.antlr.v4.gui.TestRig calcul 'start' 
+## java -cp "<Chemin du jar antlr>" org.antlr.v4.gui.TestRig calcul 'start' 
+
+
+
+# Pas encore réalisé : 
+### Traitement des expressions logiques
+### Le retour des boucles : le for et le repeat ... until
+### Analyse syntaxique des fonctions
+### Le bloc d'activation : paramètres, sortie etc
+### Support minimal des flottants
+### Tester sur quelques programmes classiques
