@@ -125,7 +125,7 @@ expression
         $code = read_func($IDENTIFIANT.text);
     }
 	| ('WRITE' | 'write') a = expression {
-        $code = $a.code + "WRITE \n";
+        $code = $a.code + "WRITE \nPOP\n";
     }
 	| PARENTHESE_O a = expression PARENTHESE_F {
         $code = $a.code;
@@ -176,8 +176,15 @@ loop
             $code+=$a.code;
             $code+="JUMP B"+(_cur_label-1)+"\n";
             $code+="LABEL "+getNewLabel()+"\n";
-    }|('for'|'FOR') PARENTHESE_O d=assignation ';' e=condition ';' f=assignation PARENTHESE_F{
-
+    }|('for'|'FOR') PARENTHESE_O d=assignation ';' e=condition ';' f=assignation PARENTHESE_F g=bloc_code{
+        $code=$d.code;
+        $code+="LABEL "+getNewLabel()+"\n";
+        $code+=$e.code;
+        $code+="JUMPF B"+(_cur_label)+"\n";
+        $code+=$g.code;
+        $code+=$f.code;
+        $code+="JUMP B"+(_cur_label-1)+"\n";
+        $code+="LABEL "+getNewLabel()+"\n";
     };
 
 branchements
