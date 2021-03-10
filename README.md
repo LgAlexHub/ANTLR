@@ -9,7 +9,7 @@
 
 
 # Pas encore réalisé : 
-### [ ]Traitement des expressions logiques
+### [x]Traitement des expressions logiques
 ### [x] Le retour des boucles : le for et le repeat ... until
 ### [ ]Analyse syntaxique des fonctions
 ### [ ]Le bloc d'activation : paramètres, sortie etc
