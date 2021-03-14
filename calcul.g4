@@ -44,23 +44,23 @@ grammar calcul;
     }
 
     private String read_func(String arg){
-        AdresseType at = tablesSymboles.getAdresseType(arg);
+        AdresseType at = tablesSymboles.getAdresseTypeGlobale(arg);
         String res = ""; 
         if (at == null)  throw new IllegalArgumentException("Adresse inconnu ou variable non déclarée");
-        else res+="READ \n STOREG "+tablesSymboles.getAdresseType(arg).adresse+" \n";
+        else res+="READ \n STOREG "+tablesSymboles.getAdresseTypeGlobale(arg).adresse+" \n";
         return res;
     }
 }
 
 start
 	returns[ String code ]
-	@init { 
-        $code = new String();
-    }
-// On initialise code, pour ensuite l'utiliser comme accumulateur 
-	@after { System.out.println($code); }: (decl { $code += $decl.code; })* NEWLINE* (
-		instruction { $code += $instruction.code;}
-	)* EOF { $code += "  HALT\n"; };
+	@init { $code = new String(); }
+	// On initialise $code, pour ensuite l'utiliser comme accumulateur 
+	@after { System.out.println($code); }: (decl { $code += $decl.code; })* { $code += "  JUMP Main\n"; } NEWLINE* (
+		fonction { $code += $fonction.code; }
+	)* NEWLINE* { $code += "LABEL Main\n"; } (
+		instruction { $code += $instruction.code; }
+	)* { $code += "  HALT\n"; };
 
 decl
 	returns[ String code ]:
@@ -76,28 +76,28 @@ decl
 assignation
 	returns[ String code ]:
 	IDENTIFIANT '+=' expression {
-            AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
+            AdresseType at = tablesSymboles.getAdresseTypeGlobale($IDENTIFIANT.text);
             $code ="PUSHG "+at.adresse+"\n";
             $code+=$expression.code;
             $code+="ADD \n";
             $code+="STOREG "+at.adresse+"\n";
     }
 	| IDENTIFIANT '++' {
-        AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
+        AdresseType at = tablesSymboles.getAdresseTypeGlobale($IDENTIFIANT.text);
         $code ="PUSHG "+at.adresse+"\n";
         $code+="PUSHI 1\n";
         $code+="ADD\n";
         $code+="STOREG "+at.adresse+"\n";
     }
 	| IDENTIFIANT '--' {
-        AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
+        AdresseType at = tablesSymboles.getAdresseTypeGlobale($IDENTIFIANT.text);
         $code ="PUSHG "+at.adresse+"\n";
         $code+="PUSHI 1\n";
         $code+="SUB\n";
         $code+="STOREG "+at.adresse+"\n";
     }
 	| IDENTIFIANT '=' expression {  
-            AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
+            AdresseType at = tablesSymboles.getAdresseTypeGlobale($IDENTIFIANT.text);
             $code = $expression.code+"STOREG "+at.adresse+"\n";
     };
 
@@ -147,11 +147,11 @@ expression
         $code = "PUSHI "+$ENTIER.getText()+"\n";
         }
 	| '-' IDENTIFIANT {
-        $code="PUSHG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse;
+        $code="PUSHG "+tablesSymboles.getAdresseTypeGlobale($IDENTIFIANT.text).adresse;
         $code+="PUSHI -1\n MUL\n";
     }
 	| IDENTIFIANT {
-        $code = "PUSHG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse+"\n";
+        $code = "PUSHG "+tablesSymboles.getAdresseTypeGlobale($IDENTIFIANT.text).adresse+"\n";
     };
 
 condition
@@ -162,22 +162,22 @@ condition
 	| 'false' {
         $code="PUSHI 0\n";
     }
-    |PARENTHESE_O k=condition PARENTHESE_F{
+	| PARENTHESE_O k = condition PARENTHESE_F {
         $code=$k.code;
     }
-    |'!'condition{
+	| '!' condition {
         $code =$condition.code;
         $code+="PUSHI 0\n";
         $code+="EQUAL\n";
     }
-    |c=condition '&&' d=condition{
+	| c = condition '&&' d = condition {
         $code=$c.code;
         $code+=$d.code;
         $code+="MUL\n";
         $code+="PUSHI 1\n";
         $code+="EQUAL\n";
     }
-    |g=condition '||' e=condition{
+	| g = condition '||' e = condition {
         $code=$g.code;
         $code+=$e.code;
         $code+="ADD\n";
@@ -192,7 +192,7 @@ condition
 
 loop
 	returns[String code]:
-	('while' | 'WHILE') a = condition  bloc_code {
+	('while' | 'WHILE') a = condition bloc_code {
             $code="LABEL "+getNewLabel()+"\n";
             $code+=$a.code;
             $code+="JUMPF B"+(_cur_label)+"\n";
@@ -201,7 +201,8 @@ loop
             $code+="JUMP B"+(_cur_label-1)+"\n";
             $code+="LABEL "+getNewLabel()+"\n";
     }
-	| ('for' | 'FOR') PARENTHESE_O d = assignation ';' e = condition ';' f = assignation PARENTHESE_F g = bloc_code {
+	| ('for' | 'FOR') PARENTHESE_O d = assignation ';' e = condition ';' f = assignation
+		PARENTHESE_F g = bloc_code {
         $code=$d.code;
         $code+="LABEL "+getNewLabel()+"\n";
         $code+=$e.code;
@@ -210,7 +211,9 @@ loop
         $code+=$f.code;
         $code+="JUMP B"+(_cur_label-1)+"\n";
         $code+="LABEL "+getNewLabel()+"\n";
-    }| ('repeat'|'REPEAT') g=bloc_code ('until'|'UNTIL') PARENTHESE_O h=condition PARENTHESE_F{
+    }
+	| ('repeat' | 'REPEAT') g = bloc_code ('until' | 'UNTIL') PARENTHESE_O h = condition
+		PARENTHESE_F {
         $code ="LABEL "+getNewLabel();
         $code+=$h.code;
         $code+="JUMPF B"+(_cur_label)+"\n";
@@ -246,6 +249,55 @@ bloc_code
             $code=$instruction.code;
         };
 
+fonction
+	returns[ String code ]
+	@init { tablesSymboles._tableLocale = new TableSymboles(); } // instancier la table locale
+	@after { tablesSymboles._tableLocale = null; } : // détruire la table locale
+	TYPE { 
+        } IDENTIFIANT '(' params? ')' { 
+           $code = "LABEL "+$IDENTIFIANT.text+"\n";
+        } a = bloc_code {
+           $code = $a.code+"RETURN\n";
+        };
+
+params:
+	TYPE IDENTIFIANT { 
+            tablesSymboles.putVar($IDENTIFIANT.text,$TYPE.text);
+        } (
+		',' TYPE IDENTIFIANT { 
+                tablesSymboles.putVar($IDENTIFIANT.text,$TYPE.text);
+            }
+	)*;
+
+// init nécessaire à cause du ? final et donc args peut être vide (mais $args sera non null) args va
+// donner le nombre d'aguments et va ajouter sur la pile les variables
+args
+	returns[ String code, int size]
+	@init { $code = new String(); $size = 0; }: (
+		expr { 
+        $size+=1;
+        $code = $expr.code; 
+    } (',' expr { 
+        
+        $size+=1;
+        $code = $expr.code;
+        // code java pour expression suivante pour arg
+        
+    }
+)*
+)?;
+
+expr
+	returns[ String code, String type ]:
+	| IDENTIFIANT '(' args ')' // appel de fonction  -
+	{  
+            $code="PUSHI 0\n";
+            $code+= $args.code;
+            $code+="CALL "+$IDENTIFIANT.text+"\n";
+            for(int i = 0 ; i< $args.size;i++)
+                $code+="POP\n";
+        };
+
 //=== LEXER ===
 finInstruction: ( NEWLINE | ';')+;
 
@@ -253,7 +305,7 @@ PARENTHESE_O: '(';
 
 PARENTHESE_F: ')';
 
-TYPE: 'int' | 'float';
+TYPE: 'int' | 'float' | 'void';
 
 IDENTIFIANT: ('a' ..'z')+;
 
