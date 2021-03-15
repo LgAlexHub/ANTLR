@@ -64,18 +64,34 @@ start
 
 decl
 	returns[ String code ]:
-	TYPE IDENTIFIANT '=' instruction {
+	TYPE IDENTIFIANT '=' expression {
         tablesSymboles.putVar($IDENTIFIANT.text,"int");
-        $code=$instruction.code;
+        $code=$expression.code;
+        System.out.println("DEBUG=>"+$code);
+        if(tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse<0){
+            $code+="STOREL "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse+"\n";
+            System.out.println("DEBUG=>"+$code);
+        }else{
+            $code+="STOREG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse+"\n";
+            System.out.println("DEBUG=>"+$code);
+        }
     }
-	| TYPE IDENTIFIANT finInstruction {
+	| TYPE IDENTIFIANT  {
             tablesSymboles.putVar($IDENTIFIANT.text,"int");
             $code = "PUSHI 0 \n";
         };
 
 assignation
 	returns[ String code ]:
-	IDENTIFIANT '+=' expression {
+    IDENTIFIANT '=' expression {  
+            AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
+            if(at.adresse<0){
+                $code = $expression.code+"STOREL "+at.adresse+"\n";
+            }else{
+                $code = $expression.code+"STOREG "+at.adresse+"\n";
+            }            
+    }
+	|IDENTIFIANT '+=' expression {
         AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
         if(at.adresse<0){
             $code ="PUSHL "+at.adresse+"\n";
@@ -116,38 +132,39 @@ assignation
             $code+="SUB\n";
             $code+="STOREG "+at.adresse+"\n";
         } 
-    }
-	| IDENTIFIANT '=' expression {  
-            
-            AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
-            if(at.adresse<0){
-                $code = $expression.code+"STOREL "+at.adresse+"\n";
-            }else{
-                $code = $expression.code+"STOREG "+at.adresse+"\n";
-            }            
     };
 
 instruction
-	returns[ String code ]:
-	assignation finInstruction { 
-            $code=$assignation.code;
+	returns[ String code ]
+    @init{String code = new String();}:
+    expression finInstruction { 
+        $code=$expression.code;
+    }
+    | finInstruction {
+            $code="";
+    }
+    decl finInstruction {
+        $code=$decl.code;
+    }
+	|assignation finInstruction { 
+        $code=$assignation.code;
     }
 	| branchements {
         $code=$branchements.code;
     }
 	| loop {
-          $code = $loop.code;
+        $code = $loop.code;
     }
-	| expression finInstruction { 
-            $code=$expression.code;
+    | RETURN instruction {
+        AdresseType at = tablesSymboles.getAdresseType("RETURN__FUNC_RES");
+        $code=$instruction.code+"STOREL "+at.adresse+" \n RETURN";
     }
-	| finInstruction {
-            $code="";
-        };
+    ;
+	
 
 expression
 	returns[ String code, String type ]:
-	| ('READ' | 'read') PARENTHESE_O IDENTIFIANT PARENTHESE_F {
+	 ('READ' | 'read') PARENTHESE_O IDENTIFIANT PARENTHESE_F {
         $code = read_func($IDENTIFIANT.text);
     }
 	| ('WRITE' | 'write') a = expression {
@@ -181,7 +198,6 @@ expression
             $code="PUSHG "+addr;
             $code+="PUSHI -1\n MUL\n";
         }
-        
     }
 	| IDENTIFIANT {
         int addr = tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse;
@@ -291,23 +307,19 @@ branchements
         };
 
 bloc_code
-	returns[String code]:
-    
-	('{' (instruction)* '}' | instruction) {
-            $code=$instruction.code;
-        };
+	returns[String code]
+    @init{ $code = new String(); }:
+    ('{'(instruction {$code += $instruction.code;})*'}'|instruction{$code+=$instruction.code;});
 
 fonction
 	returns[ String code ]
 	@init { tablesSymboles.newTableLocale();tablesSymboles.putVar("RETURN__FUNC_RES","int"); } // instancier la table locale
 	@after {tablesSymboles.dropTableLocale(); } : // détruire la table locale
-	TYPE { 
-        } IDENTIFIANT '(' params? ')' { 
-           $code = "LABEL "+$IDENTIFIANT.text+"\n";
-        } decl* { 
-            $code = $decl.code; 
+	TYPE IDENTIFIANT '(' params? ')' {
+        tablesSymboles.newFunction($IDENTIFIANT.text,$TYPE.text);
+        $code = "LABEL "+$IDENTIFIANT.text+"\n";
         } a = bloc_code {
-           $code = $a.code+"RETURN\n";
+           $code += $a.code+"RETURN\n";
         };
 
 params:
@@ -348,7 +360,7 @@ IDENTIFIANT: ('a' ..'z')+;
 
 LOOP_WORD: 'WHILE' | 'FOR';
 
-NEWLINE: '\r'? '\n' -> skip;
+NEWLINE: '\r'? '\n' ;
 
 WS: (' ' | '\t')+ -> skip;
 
@@ -357,5 +369,8 @@ ENTIER: ('0' ..'9')+;
 OPERATOR: '+' | '-' | '*' | '/';
 
 OPERATORLOG: '<' | '>' | '<=' | '>=' | '==' | '!=';
+
+// lexer
+RETURN: 'return';
 
 UNMATCH: . -> skip;

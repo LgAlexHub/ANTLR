@@ -41,7 +41,8 @@ WS=40
 ENTIER=41
 OPERATOR=42
 OPERATORLOG=43
-UNMATCH=44
+RETURN=44
+UNMATCH=45
 '='=1
 '+='=2
 '++'=3
@@ -77,3 +78,4 @@ UNMATCH=44
 ','=33
 '('=34
 ')'=35
+'return'=44
