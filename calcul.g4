@@ -147,11 +147,24 @@ expression
         $code = "PUSHI "+$ENTIER.getText()+"\n";
         }
 	| '-' IDENTIFIANT {
-        $code="PUSHG "+tablesSymboles.getAdresseTypeGlobale($IDENTIFIANT.text).adresse;
-        $code+="PUSHI -1\n MUL\n";
+        int addr = tablesSymboles.getAdresseType.adresse;
+        if (addr < 0){
+            $code="PUSHL "+tablesSymboles.getAdresseTypeLocale($IDENTIFIANT.text).adresse;
+            $code+="PUSHI -1\n MUL\n";
+        }else{
+            $code="PUSHG "+tablesSymboles.getAdresseTypeGlobale($IDENTIFIANT.text).adresse;
+            $code+="PUSHI -1\n MUL\n";
+        }
+        
     }
 	| IDENTIFIANT {
-        $code = "PUSHG "+tablesSymboles.getAdresseTypeGlobale($IDENTIFIANT.text).adresse+"\n";
+        int addr = tablesSymboles.getAdresseType.adresse;
+        if (addr < 0){
+            $code = "PUSHL "+tablesSymboles.getAdresseTypeLocale($IDENTIFIANT.text).adresse+"\n";
+        }else{
+            $code = "PUSHG "+tablesSymboles.getAdresseTypeGlobale($IDENTIFIANT.text).adresse+"\n";
+        }
+        
     };
 
 condition
@@ -251,8 +264,8 @@ bloc_code
 
 fonction
 	returns[ String code ]
-	@init { tablesSymboles._tableLocale = new TableSymboles(); } // instancier la table locale
-	@after { tablesSymboles._tableLocale = null; } : // détruire la table locale
+	@init { tablesSymboles.newTableLocale(); } // instancier la table locale
+	@after {tablesSymboles.dropTableLocale(); } : // détruire la table locale
 	TYPE { 
         } IDENTIFIANT '(' params? ')' { 
            $code = "LABEL "+$IDENTIFIANT.text+"\n";
