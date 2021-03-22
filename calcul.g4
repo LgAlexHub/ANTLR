@@ -8,15 +8,15 @@ grammar calcul;
         return "B" +(_cur_label++); 
     }
 
-    private String evalexpr (String op) {
+    private String evalexpr (String op, String type) {
         if ( op.equals("*") ){
-            return "MUL\n";
+            return (type == "float" ? "FMUL\n":"MUL\n");
         } else if ( op.equals("+") ){
-            return "ADD\n";
+            return (type == "float" ? "FADD\n":"ADD\n");
         } else if ( op.equals("-") ){
-                    return "SUB\n";
+                    (type == "float" ? "FSUB\n":"SUB\n");
         } else if ( op.equals("/") ){
-                            return "DIV\n";
+                            (type == "float" ? "FDIV\n":"DIV\n");
         } else {
            System.err.println("Opérateur arithmétique incorrect : '"+op+"'");
            throw new IllegalArgumentException("Opérateur arithmétique incorrect : '"+op+"'");
@@ -181,14 +181,17 @@ expression
     }| PARENTHESE_O a = expression PARENTHESE_F {
         $code = $a.code;
     }| a = expression op = ('*' | '/') b = expression {
+        $type = $a.type;
         $code= $a.code;
         $code+=$b.code;
-        $code+= evalexpr($op.getText());
+        $code+= evalexpr($op.getText(),$type.text);
     }|a = expression op = ('+' | '-') b = expression {
+        $type = $a.type;
         $code= $a.code;
         $code+=$b.code;
-        $code+=evalexpr($op.getText());
+        $code+=evalexpr($op.getText(),$type.text);
     }|d=element{
+        $type = $a.type;
         $code = $d.code;
     }| IDENTIFIANT '(' args ')' // appel de fonction  -
 	{  
@@ -201,27 +204,34 @@ expression
 ;
 
 element 
-    returns[String code]: 
+    returns[String code, String type]: 
         '-' FLOAT {
             $code = "PUSHF -"+$FLOAT.text;
+            $type="float";
         }|FLOAT{
             $code="PUSHF "+$FLOAT.text;
+              $type="float";
         }
         |'-' ENTIER {
             $code = "PUSHI -"+$ENTIER.getText()+"\n";
+            $type ="int";
         }| ENTIER {
             $code = "PUSHI "+$ENTIER.getText()+"\n";
+            $type="int";
         }| '-' IDENTIFIANT {
             int addr = tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse;
             if (addr < 0){
                 $code="PUSHL "+addr;
                 $code+="PUSHI -1\n MUL\n";
+                $type="int";
             }else{
                 $code="PUSHG "+addr;
                 if (tablesSymboles.getAdresseType($IDENTIFIANT.text).type == "float" || tablesSymboles.getAdresseType($IDENTIFIANT.text).type == "FLOAT"){
                     $code+="PUSHF -1\n MUL\n";
+                      $type="float";
                 }else{
                     $code+="PUSHI -1\n MUL\n";
+                    $type="int";
                 }
                 
             }   
@@ -229,8 +239,14 @@ element
             int addr = tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse;
             if (addr < 0){
                 $code = "PUSHL "+addr+"\n";
+                type="int";
             }else{
                 $code = "PUSHG "+addr+"\n";
+                if (tablesSymboles.getAdresseType($IDENTIFIANT.text).type=="float"){
+                    type="float";
+                }else{
+                    type="int";
+                }
             } 
         }
     ;
