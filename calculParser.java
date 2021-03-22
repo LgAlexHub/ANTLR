@@ -372,7 +372,7 @@ public class calculParser extends Parser {
 				finInstruction();
 
 				            ((InstructionContext)_localctx).code = "";
-				     
+				    
 				}
 				break;
 			case 3:
@@ -393,8 +393,7 @@ public class calculParser extends Parser {
 				setState(79);
 				finInstruction();
 
-
-				            ((InstructionContext)_localctx).code = ((InstructionContext)_localctx).assignation.code;
+				        ((InstructionContext)_localctx).code = ((InstructionContext)_localctx).assignation.code;
 				    
 				}
 				break;
@@ -404,8 +403,8 @@ public class calculParser extends Parser {
 				setState(82);
 				((InstructionContext)_localctx).loop = loop();
 
-				            ((InstructionContext)_localctx).code =  ((InstructionContext)_localctx).loop.code;
-				        
+				        ((InstructionContext)_localctx).code =  ((InstructionContext)_localctx).loop.code;
+				    
 				}
 				break;
 			case 6:
@@ -516,7 +515,9 @@ public class calculParser extends Parser {
 				((ExpressionContext)_localctx).expression = expression(0);
 				setState(98);
 				match(PARENTHESE_F);
-				((ExpressionContext)_localctx).code = ((ExpressionContext)_localctx).expression.code;
+
+				        ((ExpressionContext)_localctx).code = ((ExpressionContext)_localctx).expression.code;
+				    
 				}
 				break;
 			case 2:
@@ -658,6 +659,8 @@ public class calculParser extends Parser {
 				_alt = getInterpreter().adaptivePredict(_input,8,_ctx);
 			}
 			}
+			_ctx.stop = _input.LT(-1);
+			System.out.println("[expression] : "+_localctx.code);
 		}
 		catch (RecognitionException re) {
 			_localctx.exception = re;
@@ -756,6 +759,8 @@ public class calculParser extends Parser {
 				}
 				break;
 			}
+			_ctx.stop = _input.LT(-1);
+			System.out.println("[decl] : "+_localctx.code);
 		}
 		catch (RecognitionException re) {
 			_localctx.exception = re;
@@ -904,6 +909,8 @@ public class calculParser extends Parser {
 				}
 				break;
 			}
+			_ctx.stop = _input.LT(-1);
+			System.out.println("[assignation] : "+_localctx.code);
 		}
 		catch (RecognitionException re) {
 			_localctx.exception = re;

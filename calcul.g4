@@ -71,33 +71,30 @@ start returns [ String code ]
     ;
 
 instruction returns [ String code ]
-    : expression finInstruction
-    {
+    : expression finInstruction{
             $code=$expression.code;
     }| finInstruction{
             $code="";
     }| decl {
             $code=$decl.code;
-    }| assignation finInstruction
-    {
-
-            $code=$assignation.code;
+    }| assignation finInstruction{
+        $code=$assignation.code;
     }|loop{
-            $code = $loop.code;
-        }
-    | branchements{
+        $code = $loop.code;
+    }| branchements{
             $code = $branchements.code;
-    }|RETURN expression finInstruction
-        {
+    }|'return' expression finInstruction{
             AdresseType at = tablesSymboles.getAdresseType("return");
             $code = $expression.code+"\nSTOREL "+at.adresse+"\n";
             $code += "RETURN\n";
         }
     ;
 
-expression returns [ String code, String type]:
-    '(' expression ')' {$code=$expression.code;}
-    |res1=expression op=('*'|'/') res2=expression{
+expression returns [ String code, String type]
+@after{System.out.println("[expression] : "+$code);}:
+    '(' expression ')' {
+        $code=$expression.code;
+    }|res1=expression op=('*'|'/') res2=expression{
             $type = $res1.type;
             $code=$res1.code;
             $code+=$res2.code;
@@ -128,7 +125,8 @@ expression returns [ String code, String type]:
     }
 ;
 
-decl returns [ String code ]:
+decl returns [ String code ]
+@after{System.out.println("[decl] : "+$code);}:
         TYPE IDENTIFIANT finInstruction
         {
             tablesSymboles.putVar($IDENTIFIANT.text,$TYPE.text);
@@ -160,7 +158,8 @@ decl returns [ String code ]:
     ;
 
 assignation
-	returns[ String code ]:
+	returns[ String code ]
+    @after{System.out.println("[assignation] : "+$code);}:
     IDENTIFIANT '=' expression {  
         AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
         if(at.adresse<0){
