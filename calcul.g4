@@ -49,6 +49,10 @@ grammar calcul;
         else res+="READ \n STOREG "+tablesSymboles.getAdresseType(arg).adresse+" \n";
         return res;
     }
+
+    private String floatOrInt(String type){
+        return ((type == "float" | type =="FLOAT")? "PUSHF" : "PUSHI"); 
+    }
 }
 
 start
@@ -68,19 +72,17 @@ start
 decl
 	returns[ String code ]:
 	TYPE IDENTIFIANT '=' expression {
-        tablesSymboles.putVar($IDENTIFIANT.text,"int");
+        tablesSymboles.putVar($IDENTIFIANT.text,$TYPE.text);
         $code=$expression.code;
         System.out.println("DEBUG=>"+$code);
         if(tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse<0){
             $code+="STOREL "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse+"\n";
-            System.out.println("DEBUG=>"+$code);
         }else{
             $code+="STOREG "+tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse+"\n";
-            System.out.println("DEBUG=>"+$code);
         }
     }| TYPE IDENTIFIANT  {
-        tablesSymboles.putVar($IDENTIFIANT.text,"int");
-        $code = "PUSHI 0 \n";
+        tablesSymboles.putVar($IDENTIFIANT.text,$TYPE.text);
+        $code = "PUSHF 0.0 \n";
         };
 
 assignation
@@ -101,9 +103,15 @@ assignation
             $code+="STOREL "+at.adresse+"\n";
         }else{
             $code ="PUSHG "+at.adresse+"\n";
-            $code+=$expression.code;
-            $code+="ADD \n";
-            $code+="STOREG "+at.adresse+"\n";
+            if (at.type == "FLOAT" || at.type == "float"){
+                $code+=$expression.code;
+                $code+="FADD \n";
+                $code+="STOREG "+at.adresse+"\n";
+            }else{
+                $code+=$expression.code;
+                $code+="ADD \n";
+                $code+="STOREG "+at.adresse+"\n";
+            }
         }
     }| IDENTIFIANT '++' {
         AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
@@ -113,10 +121,15 @@ assignation
             $code+="ADD\n";
             $code+="STOREL "+at.adresse+"\n";
         }else{
-            $code ="PUSHG "+at.adresse+"\n";
-            $code+="PUSHI 1\n";
-            $code+="ADD\n";
-            $code+="STOREG "+at.adresse+"\n";
+            $code = "PUSHG "+at.adresse+"\n";
+            if (at.type == "FLOAT" || at.type == "float"){
+                $code+="PUSHF 1.0\n";
+                $code+="FADD\n";
+            }else{
+                $code+="PUSHI 1\n";
+                $code+="ADD\n";
+            }
+           $code+="STOREG "+at.adresse+"\n";
         }
     }|IDENTIFIANT '--' {
         AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
@@ -126,9 +139,14 @@ assignation
             $code+="SUB\n";
             $code+="STOREL "+at.adresse+"\n";
         }else{
-            $code ="PUSHG "+at.adresse+"\n";
-            $code+="PUSHI 1\n";
-            $code+="SUB\n";
+            $code="PUSHG "+at.adresse+"\n";
+            if (at.type == "float" || at.type="FLOAT"){
+                $code+="PUSHF 1.0\n";
+                $code+="FSUB\n";
+            }else{
+                $code+="PUSHI 1\n";
+                $code+="SUB\n";
+            }
             $code+="STOREG "+at.adresse+"\n";
         } 
     };
@@ -184,7 +202,12 @@ expression
 
 element 
     returns[String code]: 
-        '-' ENTIER {
+        '-' FLOAT {
+            $code = "PUSHF -"+$FLOAT.text;
+        }|FLOAT{
+            $code="PUSHF "+$FLOAT.text;
+        }
+        |'-' ENTIER {
             $code = "PUSHI -"+$ENTIER.getText()+"\n";
         }| ENTIER {
             $code = "PUSHI "+$ENTIER.getText()+"\n";
@@ -195,7 +218,12 @@ element
                 $code+="PUSHI -1\n MUL\n";
             }else{
                 $code="PUSHG "+addr;
-                $code+="PUSHI -1\n MUL\n";
+                if (tablesSymboles.getAdresseType($IDENTIFIANT.text).type == "float" || tablesSymboles.getAdresseType($IDENTIFIANT.text).type == "FLOAT"){
+                    $code+="PUSHF -1\n MUL\n";
+                }else{
+                    $code+="PUSHI -1\n MUL\n";
+                }
+                
             }   
         }|IDENTIFIANT {
             int addr = tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse;
@@ -345,6 +373,8 @@ NEWLINE: '\r'? '\n' ;
 WS: (' ' | '\t')+ -> skip;
 
 ENTIER: ('0' ..'9')+;
+
+FLOAT: ('0..9')+'.'('0..9')+;
 
 OPERATOR: '+' | '-' | '*' | '/';
 
