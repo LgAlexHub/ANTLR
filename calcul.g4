@@ -82,8 +82,8 @@ instruction returns [ String code ]
     }|loop{
         $code = $loop.code;
     }| branchements{
-            $code = $branchements.code;
-    }|'return' expression finInstruction{
+        $code = $branchements.code;
+    } | 'return' expression finInstruction {
             AdresseType at = tablesSymboles.getAdresseType("return");
             $code = $expression.code+"\nSTOREL "+at.adresse+"\n";
             $code += "RETURN\n";
@@ -300,8 +300,15 @@ loop
 
 bloc_code
 	returns[String code]
-    @init{ $code = new String(); }:
-    ('{'(instruction {$code += $instruction.code; })*'}'|instruction{$code+=$instruction.code;});
+    @init{ $code = new String(); }
+    @after{System.out.println("[bloccode] "+$code);}:
+        '{'(instruction {$code += $instruction.code; })*'}'
+    |
+        instruction{$code+=$instruction.code;}
+    
+    ;
+
+
 
 condition
 	returns[String code]:
@@ -340,7 +347,7 @@ finInstruction : ( NEWLINE | ';' )+ ;
 
 fonction returns [ String code ]
 @init{tablesSymboles.newTableLocale();tablesSymboles.putVar("return","int");}
-@after{tablesSymboles.dropTableLocale();}
+@after{tablesSymboles.dropTableLocale();System.out.println("[fonc] "+$code);}
     : TYPE IDENTIFIANT '('  params ? ')'
         {
             tablesSymboles.newFunction($IDENTIFIANT.text, $TYPE.text);
@@ -381,6 +388,7 @@ args returns [ String code, int size] @init{ $code = new String(); $size = 0; }:
       )?
     ;
 
+RETURN: 'return'| 'RETURN';
 
 READ : ('READ' | 'read') ;
 
@@ -409,6 +417,6 @@ OPERATOR: '+' | '-' | '*' | '/';
 OPERATORLOG: '<' | '>' | '<=' | '>=' | '==' | '!=';
 
 // lexer
-RETURN: 'return';
+
 
 UNMATCH: . -> skip;
