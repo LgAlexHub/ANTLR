@@ -54,7 +54,7 @@ grammar calcul;
 
 start returns [ String code ]
 @init{ $code = new String(); }   // On initialise code, pour ensuite l'utiliser comme accumulateur
-@after{ System.out.println("\n\n\n"+$code); }
+@after{ System.out.println($code); }
     :
         (decl { $code += $decl.code; })* 
         { $code += "JUMP Main\n"; }
@@ -90,8 +90,7 @@ instruction returns [ String code ]
         }
     ;
 
-expression returns [ String code, String type]
-@after{System.out.println("[expression] : "+$code);}:
+expression returns [ String code, String type]:
     '(' expression ')' {
         $code=$expression.code;
     }|res1=expression op=('*'|'/') res2=expression{
@@ -125,8 +124,7 @@ expression returns [ String code, String type]
     }
 ;
 
-decl returns [ String code ]
-@after{System.out.println("[decl] : "+$code);}:
+decl returns [ String code ]:
         TYPE IDENTIFIANT finInstruction
         {
             tablesSymboles.putVar($IDENTIFIANT.text,$TYPE.text);
@@ -158,8 +156,7 @@ decl returns [ String code ]
     ;
 
 assignation
-	returns[ String code ]
-    @after{System.out.println("[assignation] : "+$code);}:
+	returns[ String code ]:
     IDENTIFIANT '=' expression {  
         AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
         if(at.adresse<0){
@@ -241,31 +238,54 @@ branchements
         $code+="LABEL "+(_cur_label-1)+"\n";
     };
 
-element returns [String code, String type]:
-    ent=ENTIER {
-        $code = "PUSHI "+$ent.text+"\n"; $type="int";
-    } |IDENTIFIANT {
-        AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
-        if(at.adresse>=0){
-            $code = "PUSHG "+at.adresse+"\n";
-        }else{
-            $code = "PUSHL "+at.adresse+"\n";
+element 
+    returns[String code, String type]: 
+        '-' FLOAT {
+            $code = "PUSHF -"+$FLOAT.text;
+            $type="float";
+        }|FLOAT{
+            $code="PUSHF "+$FLOAT.text;
+            $type="float";
         }
-    }|'(' '-' ent=ENTIER ')' {
-        $code = "PUSHI -"+$ent.text+"\n";$type="int";
-    }|'(' '-' IDENTIFIANT ')' {
-        AdresseType at = tablesSymboles.getAdresseType($IDENTIFIANT.text);
-        $type = at.type;
-        if(at.adresse>=0){
-            $code = "PUSHG "+at.adresse+"\n";
-        }else{
-            $code = "PUSHL "+at.adresse+"\n";
+        |'-' ENTIER {
+            $code = "PUSHI -"+$ENTIER.getText()+"\n";
+            $type ="int";
+        }| ENTIER {
+            $code = "PUSHI "+$ENTIER.getText()+"\n";
+            $type="int";
+        }| '-' IDENTIFIANT {
+            int addr = tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse;
+            if (addr < 0){
+                $code="PUSHL "+addr;
+                $code+="PUSHI -1\n MUL\n";
+                $type="int";
+            }else{
+                $code="PUSHG "+addr;
+                if (tablesSymboles.getAdresseType($IDENTIFIANT.text).type == "float" || tablesSymboles.getAdresseType($IDENTIFIANT.text).type == "FLOAT"){
+                    $code+="PUSHF -1\n MUL\n";
+                      $type="float";
+                }else{
+                    $code+="PUSHI -1\n MUL\n";
+                    $type="int";
+                }
+                
+            }   
+        }|IDENTIFIANT {
+            int addr = tablesSymboles.getAdresseType($IDENTIFIANT.text).adresse;
+            if (addr < 0){
+                $code = "PUSHL "+addr+"\n";
+                $type="int";
+            }else{
+                $code = "PUSHG "+addr+"\n";
+                if (tablesSymboles.getAdresseType($IDENTIFIANT.text).type=="float"){
+                    $type="float";
+                }else{
+                    $type="int";
+                }
+            } 
         }
-        $code += "PUSHI -1\nMUL\n";
-    }| fl=FLOAT{
-        $code = "PUSHF "+$fl.text+"\n"; $type="float";
-    }
- ;
+    ;
+
 
 
 loop
@@ -300,8 +320,7 @@ loop
 
 bloc_code
 	returns[String code]
-    @init{ $code = new String(); }
-    @after{System.out.println("[bloccode] "+$code);}:
+    @init{ $code = new String(); }:
         '{'(instruction {$code += $instruction.code; })*'}'
     |
         instruction{$code+=$instruction.code;}
@@ -347,7 +366,7 @@ finInstruction : ( NEWLINE | ';' )+ ;
 
 fonction returns [ String code ]
 @init{tablesSymboles.newTableLocale();tablesSymboles.putVar("return","int");}
-@after{tablesSymboles.dropTableLocale();System.out.println("[fonc] "+$code);}
+@after{tablesSymboles.dropTableLocale();}
     : TYPE IDENTIFIANT '('  params ? ')'
         {
             tablesSymboles.newFunction($IDENTIFIANT.text, $TYPE.text);
