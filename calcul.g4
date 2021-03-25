@@ -223,19 +223,22 @@ assignation
 
 branchements
 	returns[String code]:
-	('if' | 'IF') PARENTHESE_O a = condition PARENTHESE_F b = bloc_code ('else'| 'ELSE') c = bloc_code {
+	IFCONDITION PARENTHESE_O a = condition PARENTHESE_F b = bloc_code ELSECONDITION c = bloc_code {
+        String goElse = getNewLabel();
+        String FinishLab = getNewLabel();
         $code = $a.code;
-        $code+="JUMPF "+getNewLabel()+"\n";
+        $code+="JUMPF "+goElse+"\n";
         $code+=$b.code;
-        $code+="JUMP "+getNewLabel()+"\n";
-        $code+="LABEL B"+(_cur_label-2)+"\n";
+        $code+="JUMP "+FinishLab+"\n";
+        $code+="LABEL "+goElse+"\n";
         $code+=$c.code;
-        $code+="LABEL B"+(_cur_label-1)+"\n";
-    }| ('if' | 'IF') PARENTHESE_O a = condition PARENTHESE_F b = bloc_code {
+        $code+="LABEL "+FinishLab+"\n";
+    }| IFCONDITION PARENTHESE_O a = condition PARENTHESE_F b = bloc_code {
+        String label = getNewLabel();
         $code = $a.code;
-        $code+="JUMPF "+getNewLabel()+"\n";
+        $code+="JUMPF "+label+"\n";
         $code+=$b.code;
-        $code+="LABEL "+(_cur_label-1)+"\n";
+        $code+="LABEL "+label+"\n";
     };
 
 element 
@@ -408,6 +411,10 @@ args returns [ String code, int size] @init{ $code = new String(); $size = 0; }:
 VIRGULE: ('0'..'9')+ '.' ('0'..'9')+;
 
 ENTIER: ('0' ..'9')+;
+
+IFCONDITION : 'if' | 'IF';
+
+ELSECONDITION : 'else' | 'ELSE';
 
 RETURN: 'return'| 'RETURN';
 
