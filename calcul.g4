@@ -308,14 +308,12 @@ loop
         $code+=$f.code;
         $code+="JUMP B"+(_cur_label-1)+"\n";
         $code+="LABEL "+getNewLabel()+"\n";
-    }| ('repeat' | 'REPEAT') g = bloc_code ('until' | 'UNTIL') PARENTHESE_O h = condition
-		PARENTHESE_F {
-        $code ="LABEL "+getNewLabel();
-        $code+=$h.code;
-        $code+="JUMPF B"+(_cur_label)+"\n";
+    }| ('repeat' | 'REPEAT') g = bloc_code ('until' | 'UNTIL') PARENTHESE_O h = condition PARENTHESE_F {
+        String label = getNewLabel();
+        $code ="LABEL "+label+"\n";
         $code+=$g.code;
-        $code+="JUMP B"+(_cur_label-1)+"\n";
-        $code+="LABEL "+getNewLabel()+"\n";
+        $code+=$h.code;
+        $code+="JUMPF "+label+"\n";
     };
 
 bloc_code

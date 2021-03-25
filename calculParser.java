@@ -1079,7 +1079,7 @@ public class calculParser extends Parser {
 				setState(187);
 				((ElementContext)_localctx).VIRGULE = match(VIRGULE);
 
-				            ((ElementContext)_localctx).code =  "PUSHF -"+(((ElementContext)_localctx).VIRGULE!=null?((ElementContext)_localctx).VIRGULE.getText():null);
+				            ((ElementContext)_localctx).code =  "PUSHF -"+(((ElementContext)_localctx).VIRGULE!=null?((ElementContext)_localctx).VIRGULE.getText():null)+"\n";
 				            ((ElementContext)_localctx).type = "float";
 				        
 				}
@@ -1090,7 +1090,7 @@ public class calculParser extends Parser {
 				setState(189);
 				((ElementContext)_localctx).VIRGULE = match(VIRGULE);
 
-				            ((ElementContext)_localctx).code = "PUSHF "+(((ElementContext)_localctx).VIRGULE!=null?((ElementContext)_localctx).VIRGULE.getText():null);
+				            ((ElementContext)_localctx).code = "PUSHF "+(((ElementContext)_localctx).VIRGULE!=null?((ElementContext)_localctx).VIRGULE.getText():null)+"\n";
 				            ((ElementContext)_localctx).type = "float";
 				        
 				}
@@ -1329,12 +1329,11 @@ public class calculParser extends Parser {
 				setState(224);
 				match(PARENTHESE_F);
 
-				        ((LoopContext)_localctx).code = "LABEL "+getNewLabel();
-				        _localctx.code+=((LoopContext)_localctx).h.code;
-				        _localctx.code+="JUMPF B"+(_cur_label)+"\n";
+				        String label = getNewLabel();
+				        ((LoopContext)_localctx).code = "LABEL "+label+"\n";
 				        _localctx.code+=((LoopContext)_localctx).g.code;
-				        _localctx.code+="JUMP B"+(_cur_label-1)+"\n";
-				        _localctx.code+="LABEL "+getNewLabel()+"\n";
+				        _localctx.code+=((LoopContext)_localctx).h.code;
+				        _localctx.code+="JUMPF "+label+"\n";
 				    
 				}
 				break;
