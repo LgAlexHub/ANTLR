@@ -240,11 +240,11 @@ branchements
 
 element 
     returns[String code, String type]: 
-        '-' FLOAT {
-            $code = "PUSHF -"+$FLOAT.text;
+        '-' VIRGULE {
+            $code = "PUSHF -"+$VIRGULE.text+"\n";
             $type="float";
-        }|FLOAT{
-            $code="PUSHF "+$FLOAT.text;
+        }|VIRGULE{
+            $code="PUSHF "+$VIRGULE.text+"\n";
             $type="float";
         }
         |'-' ENTIER {
@@ -407,6 +407,10 @@ args returns [ String code, int size] @init{ $code = new String(); $size = 0; }:
       )?
     ;
 
+VIRGULE: ('0'..'9')+ '.' ('0'..'9')+;
+
+ENTIER: ('0' ..'9')+;
+
 RETURN: 'return'| 'RETURN';
 
 READ : ('READ' | 'read') ;
@@ -425,11 +429,7 @@ LOOP_WORD: 'WHILE' | 'FOR';
 
 NEWLINE: '\r'? '\n' ;
 
-WS: (' ' | '\t')+ -> skip;
-
-ENTIER: ('0' ..'9')+;
-
-FLOAT: ('0..9')+'.'('0..9')+;
+WS : (' ' | '\t')+ -> skip;
 
 OPERATOR: '+' | '-' | '*' | '/';
 
