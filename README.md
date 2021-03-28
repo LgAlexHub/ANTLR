@@ -1,3 +1,4 @@
+by Thomas Hamel , Legras Alexis 
 # Si vous avez un soucis avec le zip voici le git du projet :
 ## https://github.com/LgAlexHub/ANTLR
 
@@ -11,8 +12,8 @@
 # Pas encore réalisé : 
 ### [x]Traitement des expressions logiques
 ### [x] Le retour des boucles : le for et le repeat ... until
-### [ ]Analyse syntaxique des fonctions
-### [ ]Le bloc d'activation : paramètres, sortie etc
-### [ ]Support minimal des flottants
+### [x]Analyse syntaxique des fonctions
+### [x]Le bloc d'activation : paramètres, sortie etc
+### [x]Support minimal des flottants
 ### [ ]Tester sur quelques programmes classiques
 ### [ ] Autres améliorations
